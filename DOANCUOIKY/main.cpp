@@ -8,20 +8,23 @@ int speed = 50;
 
 void SubThread()
 {
-	while (!cg.getPeople().isDead())
-	{
-		cg.updatePosPeople(MOVING);
-		MOVING = ' ';
-		cg.printScore();
-		cg.updatePosVehicle();//Cập nhật vị trí xe
-		cg.updatePosAnimal(); //Cập nhật vị trí thú
-		cg.drawGame();
-		cg.isImpact();
-		if (cg.getPeople().isDead()) {
-			cg.drawDie();
+	while (1) {
+		while (!cg.getPeople().isDead())
+		{
+			cg.updatePosPeople(MOVING);
+			MOVING = ' ';
+			cg.printScore();
+			cg.updatePosVehicle();//Cập nhật vị trí xe
+			cg.updatePosAnimal(); //Cập nhật vị trí thú
+			cg.drawGame();
+			cg.isImpact();
+			cg.reset();
+			cg.speedUp(speed);
+			if (cg.getPeople().isDead()) {
+				cg.drawDie();
+				cg.drawContinue();
+			}
 		}
-		cg.reset();
-		cg.speedUp(speed);
 	}
 }
 
@@ -36,9 +39,8 @@ int main() {
 	system("cls");
 	char temp;
 	bool key = 0;
-	cg.Menu();
 	PlaySound(TEXT("song.wav"), NULL, SND_FILENAME | SND_ASYNC);
-	cg.drawMap();
+	cg.Menu();
 	thread t1(SubThread);
 	while (true)
 	{
@@ -47,37 +49,35 @@ int main() {
 		{
 			if (temp == 27)
 			{
+				system("cls");
 				cg.exitGame(t1.native_handle());
 			}
 			else if (temp == 'P')
 			{
 				cg.pauseGame(t1.native_handle());
-				key = 1;
-				cg.pausePanel();
 			}
 			else if (temp == 'L')
 			{
 				cg.pauseGame(t1.native_handle());
-				//cg->saveGame();
-			}
-			else if (temp == 'T')
-			{
-				//mciSendStringA("stop nen.mp3", 0, NULL, 0);
-				//cg->pauseGame(t1.native_handle());
-				//system("cls");
-				//cg->loadGame();
-				//cg->startGame();
-				//cg->drawGame();
-				//mciSendStringA("play nen.mp3", 0, NULL, 0);
+				cg.saveGame();
+				system("cls");
+				cg.drawMap();
+				cg.resumeGame((HANDLE)t1.native_handle());
 			}
 			else
 			{
-				if (key == 1) {
-					cg.drawMap();
-					key = 0;
-				}
 				cg.resumeGame((HANDLE)t1.native_handle());
 				MOVING = temp; //Cập nhật bước di chuyển
+			}
+		}
+		else {
+			if (temp == 'Y') {
+				system("cls");
+				cg.drawMap();
+				cg.resetGame();
+			}
+			else {
+				exit(0);
 			}
 		}
 	}

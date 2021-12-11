@@ -35,5 +35,8 @@
     <ClInclude Include="canimal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ctraffic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

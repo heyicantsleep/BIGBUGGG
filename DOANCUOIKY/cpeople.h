@@ -73,7 +73,7 @@ public:
 	}
 
 	void draw() {
-		textColor(2);
+		textColor(6);
 		for (int i = 0; i < 3; ++i) {
 			gotoxy(mX, mY + i);
 			cout << people[i];
@@ -86,6 +86,12 @@ public:
 			gotoxy(mX, mY + i);
 			cout << "   ";
 		}
+	}
+
+	void reset() {
+		mX = consoleWidth / 2 - 1;
+		mY = consoleHeight - 3;
+		mState = true;
 	}
 };
 

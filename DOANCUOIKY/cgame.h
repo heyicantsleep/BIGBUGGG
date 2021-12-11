@@ -4,8 +4,12 @@
 #include "canimal.h"
 #include "cpeople.h"
 #include "cvehicle.h"
+#include "ctraffic.h"
 #include <conio.h>
 #include <time.h>
+#include <fstream>
+#include <vector>
+#include <Windows.h>
 
 class CGAME {
 private:
@@ -16,7 +20,8 @@ private:
 	CCOW* cow;
 	CPEOPLE people;
 	int score;
-
+	CTRAFFIC traffic1{ 100 + rand() % 50 };
+	CTRAFFIC traffic2{ 100 };
 public:
 	CGAME() {
 		score = 0;
@@ -25,19 +30,19 @@ public:
 		deer = new CDEER[MAX_ANIMAL];
 		cow = new CCOW[MAX_ANIMAL];
 		ambu = new CAMBU;
-		srand(time(0));
 		for (int i = 0; i < 3; ++i) {
 			int x = i * 30 + (rand() % (10));
-			truck[i].setX(10*i + x + rand() % (5));
+			srand(time(0));
+			truck[i].setX(10 * i + x + rand() % (5));
 			truck[i].setY(26);
 			srand(time(0));
-			car[i].setX(5*i + x + rand() % (5));
+			car[i].setX(5 * i + x + rand() % (5));
 			car[i].setY(14);
 			srand(time(0));
-			deer[i].setX(10*i + x + rand() % (5));
+			deer[i].setX(10 * i + x + rand() % (5));
 			deer[i].setY(20);
 			srand(time(0));
-			cow[i].setX(5*i + x + rand() % (5));
+			cow[i].setX(5 * i + x + rand() % (5));
 			cow[i].setY(8);
 		}
 	}
@@ -46,6 +51,8 @@ public:
 		if (getScore() * 5 < speed) {
 			Sleep(speed - getScore() * 5);
 		}
+		else
+			Sleep(5);
 	}
 
 	void printScore() {
@@ -70,7 +77,6 @@ public:
 										         	                 _______________________ 
 										         	           	| Press W,A,S,D to move |
 										               	                | Press L to save game  |
-										         	                | Press T to loadgame   |
 										         	                | Press P to pause game |
 										         	           	| Press ESC to exit     |
 										         	           	 ----------------------- 
@@ -79,7 +85,7 @@ public:
 										         	           	            (__)\       )\/\
 										         	           	                ||----w |
 										         	           	                ||     ||)";
-		
+
 		for (int i = 0; i < consoleHeight; ++i) {
 			gotoxy(0, i);
 			cout << char(186) << '\n';
@@ -92,7 +98,7 @@ public:
 
 		for (int i = 0; i < 5; ++i) {
 			gotoxy(1, 6 + 6 * i);
-			for (int j = 0; j < (consoleWidth - 1)/11; ++j) {
+			for (int j = 0; j < (consoleWidth - 1) / 11; ++j) {
 				cout << "==========|";
 			}
 		}
@@ -118,7 +124,7 @@ public:
 
 	}
 
-	 int getScore() {
+	int getScore() {
 		return score;
 	}
 
@@ -144,7 +150,7 @@ public:
 
 	CPEOPLE getPeople() { return people; }
 
-	 void reset() {
+	void reset() {
 		if (people.getY() < 5) {
 			for (int i = 1; i < 6; i++) {
 				gotoxy(1, i);
@@ -176,7 +182,7 @@ public:
 		const string menu[] = { " New Game  ", " Load Game ", " Settings  ",
 							   " Exit      " };
 		int pos = 0;
-		const int y = consoleHeight/2;
+		const int y = consoleHeight / 2;
 		const int x = consoleWidth / 1.5 + 5;
 		int flag = 0;
 		while (1) {
@@ -233,11 +239,15 @@ public:
 						switch (pos) {
 						case 0: {
 							system("cls");
+							drawMap();
 							flag = 1;
 							break;
 						}
 						case 1: {
 							system("cls");
+							loadGame();
+							system("cls");
+							drawMap();
 							flag = 1;
 							break;
 						}
@@ -260,7 +270,7 @@ public:
 		}
 	}
 
-	 void updatePosPeople(char ch) {
+	void updatePosPeople(char ch) {
 		if (ch == 'A') {
 			people.clear();
 			people.Left(4);
@@ -279,21 +289,50 @@ public:
 		}
 	}
 
-	 void updatePosVehicle() {
-		for (int i = 0; i < MAX_VEHICLE; ++i) {
-			truck[i].move(-1, 0);
-			car[i].move(-1, 0);
+	void updatePosVehicle() {
+		if (traffic1.getStatus() == false) {
+			traffic1.drawSignalGreen(truck->getY() - 1);
+			for (int i = 0; i < MAX_VEHICLE; ++i)
+				truck[i].move(-1, 0);
+			if (traffic1.updateTime() < 0) {
+				traffic1.setStatus(1);
+				traffic1.setTime(50);
+			}
+		}
+		else {
+			traffic1.drawSignalRed(truck->getY() - 1);
+			if (traffic1.updateTime() < 0) {
+				traffic1.setTime(150);
+				traffic1.setStatus(0);
+			}
+		}
+
+		if (traffic2.getStatus() == false) {
+			traffic2.drawSignalGreen(car->getY() - 1);
+			for (int i = 0; i < MAX_VEHICLE; ++i)
+				car[i].move(-1, 0);
+			if (traffic2.updateTime() < 0) {
+				traffic2.setStatus(1);
+				traffic2.setTime(50);
+			}
+		}
+		else {
+			traffic2.drawSignalRed(car->getY() - 1);
+			if (traffic2.updateTime() < 0) {
+				traffic2.setTime(150 + rand() % 50);
+				traffic2.setStatus(0);
+			}
 		}
 	}
 
-	 void updatePosAnimal() {
+	void updatePosAnimal() {
 		for (int i = 0; i < MAX_ANIMAL; ++i) {
 			deer[i].move(1, 0);
 			cow[i].move(1, 0);
 		}
 	}
 
-	 bool isImpact() {
+	bool isImpact() {
 		for (int i = 0; i < MAX_VEHICLE; ++i) {
 			if (truck[i].getY() == people.getY() - 1)
 				if (abs(truck[i].getX() - people.getX()) < 3 || (people.getX() > truck[i].getX() && people.getX() < truck[i].getX() + 17)) {
@@ -335,25 +374,116 @@ public:
 		ambu->setY(people.getY() - 1);
 		for (int i = consoleWidth; i > -16; --i) {
 			ambu->draw();
-			Sleep(20);
 			ambu->move(-1, 0);
+			Sleep(10);
 		}
 		system("cls");
 	}
 
-	void pausePanel() {
-		textColor(11);
-		gotoxy(114, 7);
-		cout << R"(P)";
-		gotoxy(119, 7);
-		cout << R"(A)"; 
-		gotoxy(124, 7);
-		cout << R"(U)";
-		gotoxy(129, 7);
-		cout << R"(S)";
-		gotoxy(134, 7);
-		cout << R"(E)";
+	void resetGame()
+	{
+		people.reset();
+		score = 0;
+	}
+
+	void drawContinue() {
+		gotoxy(consoleWidth / 1.5 + 3, consoleHeight / 2 - 1);
+		textColor(14);
+		cout << "Play again?(y/N)";
 		textColor(7);
+	}
+
+	void saveGame() {
+		string fileName;
+		gotoxy(101, 30);
+		cout << "Enten file name: ";
+		cin >> fileName;
+		ofstream ofs(fileName+".txt");
+		ofs << people.getX() << " " << people.getY() << endl;
+		for (int i = 0; i < 3; i++) {
+			ofs << truck[i].getX() << " " << truck[i].getY() << endl;
+			ofs << car[i].getX() << " " << car[i].getY() << endl;
+			ofs << cow[i].getX() << " " << cow[i].getY() << endl;
+			ofs << deer[i].getX() << " " << deer[i].getY() << endl;
+		}
+		ofs << score << endl;
+		ofs << traffic1.getTime() << " " << traffic1.getStatus() << endl;
+		ofs << traffic2.getTime() << " " << traffic2.getStatus() << endl;
+	}
+
+
+	std::wstring ExePath() {
+		TCHAR buffer[MAX_PATH] = { 0 };
+		GetModuleFileName(NULL, buffer, MAX_PATH);
+		std::wstring::size_type pos = std::wstring(buffer).find_last_of(L"\\/");
+		return std::wstring(buffer).substr(0, pos);
+	}
+
+	void listTXT()
+	{
+		vector<wstring> names;
+		wstring temp = ExePath();
+		while (temp.back() != '\\') {
+			temp.pop_back();
+		}
+		temp += L"\\DOANCUOIKY\\*.txt";
+		WIN32_FIND_DATA fd;
+		HANDLE hFind = ::FindFirstFile(temp.c_str(), &fd);
+		if (hFind != INVALID_HANDLE_VALUE) {
+			do {
+				// read all (real) files in current folder
+				// , delete '!' read other 2 default folder . and ..
+				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+					names.push_back(fd.cFileName);
+				}
+			} while (::FindNextFile(hFind, &fd));
+			::FindClose(hFind);
+		}
+		for (int i = 0; i < names.size(); i++) {
+			wstring a = names[i];
+			do {
+				a.pop_back();
+			} while (a.back() != '.');
+			a.pop_back();
+			wcout << a << endl;
+		}
+	}
+
+	void loadGame() {
+		listTXT();
+		string s;
+		cout << "nhap: ";
+		cin >> s;
+		s += ".txt";
+		ifstream ifs(s);
+		if (ifs) {
+			int x, y;
+			ifs >> x >> y;
+			people.setX(x);
+			people.setY(y);
+			for (int i = 0; i < 3; i++) {
+				ifs >> x >> y;
+				truck[i].setX(x);
+				truck[i].setY(y);
+				ifs >> x >> y;
+				car[i].setX(x);
+				car[i].setY(y);
+				ifs >> x >> y;
+				cow[i].setX(x);
+				cow[i].setY(y);
+				ifs >> x >> y;
+				deer[i].setX(x);
+				deer[i].setY(y);
+			}
+			ifs >> score;
+			ifs >> x >> y;
+			traffic1.setTime(x);
+			traffic1.setStatus(y);
+			ifs >> x >> y;
+			traffic2.setStatus(y);
+			traffic2.setTime(x);
+		}
+		
 	}
 };
 

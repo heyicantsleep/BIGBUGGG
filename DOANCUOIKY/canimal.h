@@ -51,8 +51,8 @@ public:
 
 class CCOW : public CANIMAL {
 private:
-    const string cow[4] = { R"(           (__))", R"(    ______/(@@))",
-                      R"( *\(      /(__))", R"(    ||w----||   )" };
+    const string cow[4] = { R"(           (__))", R"(    ______/(oo))",
+                      R"( *\(      /(__))", R"(   ||w----||   )" };
     int length = 15;
 
 public:

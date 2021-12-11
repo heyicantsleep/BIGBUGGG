@@ -12,11 +12,10 @@ using namespace std;
 class CVEHICLE {
 protected:
     int mX, mY;
-
 public:
     virtual void move(int dx, int dy) = 0;
-     int getX() const { return mX; }
-     int getY() const { return mY; }
+     inline int getX() const { return mX; }
+     inline int getY() const { return mY; }
      void setX(int x) { mX = x; }
      void setY(int y) { mY = y; }
 };
@@ -52,7 +51,7 @@ public:
 
 class CCAR : public CVEHICLE {
 private:
-    const string car[4] = { R"(      _____      )", R"( ____//_|_\\___  )",
+    const string car[4] = { R"(      _____      )", R"( ____//_|__\___  )",
                      R"(|o _   -|-  _ o| )", R"('-(o)------(o)-' )"};
 
 public:
