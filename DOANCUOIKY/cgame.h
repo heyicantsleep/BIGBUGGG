@@ -1,4 +1,4 @@
-#ifndef _CGAME_H_
+﻿#ifndef _CGAME_H_
 #define _CGAME_H_
 
 #include "canimal.h"
@@ -10,6 +10,13 @@
 #include <fstream>
 #include <vector>
 #include <Windows.h>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+vector<int> p = { 8, 14, 20, 26 };
+
 
 class CGAME {
 private:
@@ -20,8 +27,8 @@ private:
 	CCOW* cow;
 	CPEOPLE people;
 	int score;
-	CTRAFFIC traffic1{ 100 + rand() % 50 };
-	CTRAFFIC traffic2{ 100 };
+	CTRAFFIC truckTraffic{ 100 + rand() % 50 };
+	CTRAFFIC carTraffic{ 100 };
 public:
 	CGAME() {
 		score = 0;
@@ -30,20 +37,22 @@ public:
 		deer = new CDEER[MAX_ANIMAL];
 		cow = new CCOW[MAX_ANIMAL];
 		ambu = new CAMBU;
+		srand(time(0));
+		random_shuffle(p.begin(), p.end());
 		for (int i = 0; i < 3; ++i) {
 			int x = i * 30 + (rand() % (10));
 			srand(time(0));
 			truck[i].setX(10 * i + x + rand() % (5));
-			truck[i].setY(26);
+			truck[i].setY(p[0]);
 			srand(time(0));
 			car[i].setX(5 * i + x + rand() % (5));
-			car[i].setY(14);
+			car[i].setY(p[1]);
 			srand(time(0));
 			deer[i].setX(10 * i + x + rand() % (5));
-			deer[i].setY(20);
+			deer[i].setY(p[2]);
 			srand(time(0));
 			cow[i].setX(5 * i + x + rand() % (5));
-			cow[i].setY(8);
+			cow[i].setY(p[3]);
 		}
 	}
 
@@ -178,97 +187,7 @@ public:
 		ResumeThread(t);
 	}
 
-	void Menu() {
-		const string menu[] = { " New Game  ", " Load Game ", " Settings  ",
-							   " Exit      " };
-		int pos = 0;
-		const int y = consoleHeight / 2;
-		const int x = consoleWidth / 1.5 + 5;
-		int flag = 0;
-		while (1) {
-			system("cls");
-			textColor(14);
-			gotoxy(1, 2);
-			cout << R"(
-            $$$$$$\                                          $$\                            $$$$$$\                                    
-           $$  __$$\                                         \__|                          $$  __$$\                                   
-           $$ /  \__| $$$$$$\   $$$$$$\   $$$$$$$\  $$$$$$$\ $$\ $$$$$$$\   $$$$$$\        $$ /  \__| $$$$$$\  $$$$$$\$$$$\   $$$$$$\  
-           $$ |      $$  __$$\ $$  __$$\ $$  _____|$$  _____|$$ |$$  __$$\ $$  __$$\       $$ |$$$$\  \____$$\ $$  _$$  _$$\ $$  __$$\ 
-           $$ |      $$ |  \__|$$ /  $$ |\$$$$$$\  \$$$$$$\  $$ |$$ |  $$ |$$ /  $$ |      $$ |\_$$ | $$$$$$$ |$$ / $$ / $$ |$$$$$$$$ |
-           $$ |  $$\ $$ |      $$ |  $$ | \____$$\  \____$$\ $$ |$$ |  $$ |$$ |  $$ |      $$ |  $$ |$$  __$$ |$$ | $$ | $$ |$$   ____|
-           \$$$$$$  |$$ |      \$$$$$$  |$$$$$$$  |$$$$$$$  |$$ |$$ |  $$ |\$$$$$$$ |      \$$$$$$  |\$$$$$$$ |$$ | $$ | $$ |\$$$$$$$\ 
-            \______/ \__|       \______/ \_______/ \_______/ \__|\__|  \__| \____$$ |       \______/  \_______|\__| \__| \__| \_______|
-                                                                           $$\   $$ |                                                  
-                                                                           \$$$$$$  |                                                  
-                                                                            \______/                                                   )";
-
-			for (int i = 0; i < 4; ++i) {
-				if (i == pos) {
-					textColor(224);
-					gotoxy(x, y + i);
-					cout << menu[i];
-					textColor(7);
-				}
-				else {
-					gotoxy(x, y + i);
-					cout << menu[i];
-				}
-			}
-			while (1) {
-				if (_kbhit()) {
-					char key = _getch();
-					if (key == 'W' || key == 'w') {
-						if (pos > 0) {
-							pos--;
-						}
-						else {
-							pos = 4 - 1;
-						}
-						break;
-					}
-					if (key == 'S' || key == 's') {
-						if (pos < 4 - 1) {
-							pos++;
-						}
-						else {
-							pos = 0;
-						}
-						break;
-					}
-					if (key == 13) {
-						switch (pos) {
-						case 0: {
-							system("cls");
-							drawMap();
-							flag = 1;
-							break;
-						}
-						case 1: {
-							system("cls");
-							loadGame();
-							system("cls");
-							drawMap();
-							flag = 1;
-							break;
-						}
-						case 2: {
-							flag = 1;
-							break;
-						}
-						case 3: {
-							system("cls");
-							exit(0);
-							break;
-						}
-						}
-						break;
-					}
-				}
-			}
-			if (flag)
-				break;
-		}
-	}
+	
 
 	void updatePosPeople(char ch) {
 		if (ch == 'A') {
@@ -290,37 +209,37 @@ public:
 	}
 
 	void updatePosVehicle() {
-		if (traffic1.getStatus() == false) {
-			traffic1.drawSignalGreen(truck->getY() - 1);
+		if (truckTraffic.getState() == false) {
+			truckTraffic.drawGreenLight(truck->getY() - 1);
 			for (int i = 0; i < MAX_VEHICLE; ++i)
 				truck[i].move(-1, 0);
-			if (traffic1.updateTime() < 0) {
-				traffic1.setStatus(1);
-				traffic1.setTime(50);
+			if (truckTraffic.updateTime() < 0) {
+				truckTraffic.setState(true);
+				truckTraffic.setTime(50);
 			}
 		}
 		else {
-			traffic1.drawSignalRed(truck->getY() - 1);
-			if (traffic1.updateTime() < 0) {
-				traffic1.setTime(150);
-				traffic1.setStatus(0);
+			truckTraffic.drawRedLight(truck->getY() - 1);
+			if (truckTraffic.updateTime() < 0) {
+				truckTraffic.setState(false);
+				truckTraffic.setTime(150);
 			}
 		}
 
-		if (traffic2.getStatus() == false) {
-			traffic2.drawSignalGreen(car->getY() - 1);
+		if (carTraffic.getState() == false) {
+			carTraffic.drawGreenLight(car->getY() - 1);
 			for (int i = 0; i < MAX_VEHICLE; ++i)
 				car[i].move(-1, 0);
-			if (traffic2.updateTime() < 0) {
-				traffic2.setStatus(1);
-				traffic2.setTime(50);
+			if (carTraffic.updateTime() < 0) {
+				carTraffic.setState(true);
+				carTraffic.setTime(50);
 			}
 		}
 		else {
-			traffic2.drawSignalRed(car->getY() - 1);
-			if (traffic2.updateTime() < 0) {
-				traffic2.setTime(150 + rand() % 50);
-				traffic2.setStatus(0);
+			carTraffic.drawRedLight(car->getY() - 1);
+			if (carTraffic.updateTime() < 0) {
+				carTraffic.setTime(150 + rand() % 50);
+				carTraffic.setState(false);
 			}
 		}
 	}
@@ -380,16 +299,49 @@ public:
 		system("cls");
 	}
 
-	void resetGame()
+	void resetGame(int t = 0)
 	{
 		people.reset();
-		score = 0;
+		score = t;
+
+		srand(time(0));
+		random_shuffle(p.begin(), p.end());
+
+		for (int i = 0; i < 3; ++i) {
+			int x = i * 30 + (rand() % (10));
+			srand(time(0));
+			truck[i].setX(10 * i + x + rand() % (5));
+			truck[i].setY(p[0]);
+
+			srand(time(0));
+			car[i].setX(5 * i + x + rand() % (5));
+			car[i].setY(p[1]);
+
+			srand(time(0));
+			deer[i].setX(10 * i + x + rand() % (5));
+			deer[i].setY(p[2]);
+
+			srand(time(0));
+			cow[i].setX(5 * i + x + rand() % (5));
+			cow[i].setY(p[3]);
+		}
 	}
 
 	void drawContinue() {
-		gotoxy(consoleWidth / 1.5 + 3, consoleHeight / 2 - 1);
 		textColor(14);
-		cout << "Play again?(y/N)";
+		gotoxy(1, 2);
+		cout << R"(
+				 $$$$$$\                                           $$$$$$\                                 
+				$$  __$$\                                         $$  __$$\                                
+				$$ /  \__| $$$$$$\  $$$$$$\$$$$\   $$$$$$\        $$ /  $$ |$$\    $$\  $$$$$$\   $$$$$$\  
+				$$ |$$$$\  \____$$\ $$  _$$  _$$\ $$  __$$\       $$ |  $$ |\$$\  $$  |$$  __$$\ $$  __$$\ 
+				$$ |\_$$ | $$$$$$$ |$$ / $$ / $$ |$$$$$$$$ |      $$ |  $$ | \$$\$$  / $$$$$$$$ |$$ |  \__|
+				$$ |  $$ |$$  __$$ |$$ | $$ | $$ |$$   ____|      $$ |  $$ |  \$$$  /  $$   ____|$$ |      
+				\$$$$$$  |\$$$$$$$ |$$ | $$ | $$ |\$$$$$$$\        $$$$$$  |   \$  /   \$$$$$$$\ $$ |      
+				 \______/  \_______|\__| \__| \__| \_______|       \______/     \_/     \_______|\__|      
+)";
+		gotoxy(consoleWidth / 1.5 + 3, consoleHeight / 2 - 1);
+		cout << " Play again?(y/N) ";
 		textColor(7);
 	}
 
@@ -407,8 +359,8 @@ public:
 			ofs << deer[i].getX() << " " << deer[i].getY() << endl;
 		}
 		ofs << score << endl;
-		ofs << traffic1.getTime() << " " << traffic1.getStatus() << endl;
-		ofs << traffic2.getTime() << " " << traffic2.getStatus() << endl;
+		ofs << truckTraffic.getTime() << " " << truckTraffic.getState() << endl;
+		ofs << carTraffic.getTime() << " " << carTraffic.getState() << endl;
 	}
 
 
@@ -439,8 +391,13 @@ public:
 			} while (::FindNextFile(hFind, &fd));
 			::FindClose(hFind);
 		}
+		for (int i = 0; i < 10; i++) {
+			gotoxy(consoleWidth / 1.5, 18 + i);
+			cout << i+1 << ".              ";
+		}
 		for (int i = 0; i < names.size(); i++) {
 			wstring a = names[i];
+			gotoxy(consoleWidth / 1.5 + 3, 18 + i);
 			do {
 				a.pop_back();
 			} while (a.back() != '.');
@@ -450,10 +407,15 @@ public:
 	}
 
 	void loadGame() {
+
 		listTXT();
 		string s;
-		cout << "nhap: ";
+		textColor(224);
+		gotoxy(consoleWidth/1.5, consoleHeight/2-2);
+		cout << " Enter file name:          ";
+		gotoxy(consoleWidth / 1.2 + 1 , consoleHeight / 2 - 2);
 		cin >> s;
+		textColor(7);
 		s += ".txt";
 		ifstream ifs(s);
 		if (ifs) {
@@ -477,13 +439,16 @@ public:
 			}
 			ifs >> score;
 			ifs >> x >> y;
-			traffic1.setTime(x);
-			traffic1.setStatus(y);
+			truckTraffic.setTime(x);
+			truckTraffic.setState(y);
 			ifs >> x >> y;
-			traffic2.setStatus(y);
-			traffic2.setTime(x);
+			carTraffic.setState(y);
+			carTraffic.setTime(x);
 		}
-		
+	}
+
+	void musicOff() {
+		PlaySound(NULL, 0, 0);
 	}
 };
 

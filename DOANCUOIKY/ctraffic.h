@@ -8,47 +8,43 @@ using namespace std;
 
 class CTRAFFIC {
 private:
-	int t;
-	bool status;
+	int mTime;
+	bool mState;
 public:
-	CTRAFFIC(){}
 
-	CTRAFFIC(int t1): t(t1), status(0)
+	CTRAFFIC(int time): mTime(time), mState(0)
 	{
-		t = t1;
-		status = 0;
-	}
-	~CTRAFFIC() {}
-
-	void setStatus(int i) {
-		status = i;
 	}
 
-	bool getStatus() {
-		return status;
+	void setState(bool i) {
+		mState = i;
 	}
 
-	void setTime(int t1) {
-		t = t1;
+	bool getState() {
+		return mState;
 	}
 
-	int getTime() {
-		return t;
+	void setTime(int time) {
+		mTime = time;
 	}
 
-	int updateTime() {
-		return t--;
+	inline int getTime() {
+		return mTime;
 	}
 
-	void drawSignalRed(int i) {
-		gotoxy(101, i);
+	inline int updateTime() {
+		return --mTime;
+	}
+
+	void drawRedLight(int index) {
+		gotoxy(101, index);
 		textColor(196);
 		cout << "  ";
 		textColor(7);
 	}
 
-	void drawSignalGreen(int i) {
-		gotoxy(101, i);
+	void drawGreenLight(int index) {
+		gotoxy(101, index);
 		textColor(34);
 		cout << "  ";
 		textColor(7);

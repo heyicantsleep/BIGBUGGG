@@ -1,6 +1,7 @@
 ﻿#pragma comment(lib, "winmm.lib")
 #include "cgame.h"
 #include <thread>
+#include <conio.h>
 
 CGAME cg;
 char MOVING;
@@ -28,29 +29,17 @@ void SubThread()
 	}
 }
 
-
-int main() {
-	ios_base::sync_with_stdio(false);
-	cin.tie(0);
-	cout.tie(0);
-	fixConsole();
-	resizeConsole(1100, 630);
-	hideCursor();
-	system("cls");
-	char temp;
-	bool key = 0;
-	PlaySound(TEXT("song.wav"), NULL, SND_FILENAME | SND_ASYNC);
-	cg.Menu();
-	thread t1(SubThread);
+auto l = [](thread& t1) {
 	while (true)
 	{
-		temp = toupper(_getch());
+		char temp = toupper(_getch());
 		if (!cg.getPeople().isDead())
 		{
 			if (temp == 27)
 			{
-				system("cls");
-				cg.exitGame(t1.native_handle());
+				cg.pauseGame(t1.native_handle());
+				cg.resetGame();
+				break;
 			}
 			else if (temp == 'P')
 			{
@@ -77,8 +66,114 @@ int main() {
 				cg.resetGame();
 			}
 			else {
-				exit(0);
+				cg.resetGame();
+				cg.pauseGame(t1.native_handle());
+				break;
 			}
 		}
+	}
+};
+
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+	fixConsole();
+	resizeConsole(1100, 630);
+	hideCursor();
+	system("cls");
+	thread t1(SubThread);
+	cg.pauseGame(t1.native_handle());
+	system("cls");
+	PlaySound(TEXT("song.wav"), NULL, SND_FILENAME | SND_ASYNC);
+	const string menu[] = { " New Game  ", " Load Game ", " Settings  ",
+						   " Exit      " };
+	int pos = 0;
+	const int y = consoleHeight / 2;
+	const int x = consoleWidth / 1.5 + 5;
+	int flag = 0;
+	while (1) {
+		system("cls");
+		textColor(14);
+		gotoxy(1, 2);
+		cout << R"(
+            $$$$$$\                                          $$\                            $$$$$$\                                    
+           $$  __$$\                                         \__|                          $$  __$$\                                   
+           $$ /  \__| $$$$$$\   $$$$$$\   $$$$$$$\  $$$$$$$\ $$\ $$$$$$$\   $$$$$$\        $$ /  \__| $$$$$$\  $$$$$$\$$$$\   $$$$$$\  
+           $$ |      $$  __$$\ $$  __$$\ $$  _____|$$  _____|$$ |$$  __$$\ $$  __$$\       $$ |$$$$\  \____$$\ $$  _$$  _$$\ $$  __$$\ 
+           $$ |      $$ |  \__|$$ /  $$ |\$$$$$$\  \$$$$$$\  $$ |$$ |  $$ |$$ /  $$ |      $$ |\_$$ | $$$$$$$ |$$ / $$ / $$ |$$$$$$$$ |
+           $$ |  $$\ $$ |      $$ |  $$ | \____$$\  \____$$\ $$ |$$ |  $$ |$$ |  $$ |      $$ |  $$ |$$  __$$ |$$ | $$ | $$ |$$   ____|
+           \$$$$$$  |$$ |      \$$$$$$  |$$$$$$$  |$$$$$$$  |$$ |$$ |  $$ |\$$$$$$$ |      \$$$$$$  |\$$$$$$$ |$$ | $$ | $$ |\$$$$$$$\ 
+            \______/ \__|       \______/ \_______/ \_______/ \__|\__|  \__| \____$$ |       \______/  \_______|\__| \__| \__| \_______|
+                                                                           $$\   $$ |                                                  
+                                                                           \$$$$$$  |                                                  
+                                                                            \______/                                                   )";
+
+		for (int i = 0; i < 4; ++i) {
+			if (i == pos) {
+				textColor(224);
+				gotoxy(x, y + i);
+				cout << menu[i];
+				textColor(7);
+			}
+			else {
+				gotoxy(x, y + i);
+				cout << menu[i];
+			}
+		}
+		while (1) {
+			if (_kbhit()) {
+				char key = _getch();
+				if (key == 'W' || key == 'w') {
+					if (pos > 0) {
+						pos--;
+					}
+					else {
+						pos = 4 - 1;
+					}
+					break;
+				}
+				if (key == 'S' || key == 's') {
+					if (pos < 4 - 1) {
+						pos++;
+					}
+					else {
+						pos = 0;
+					}
+					break;
+				}
+				if (key == 13) {
+					switch (pos) {
+					case 0: {
+						system("cls");
+						cg.drawMap();
+						cg.resumeGame((HANDLE)t1.native_handle());
+						l(t1);
+						break;
+					}
+					case 1: {
+						cg.loadGame();
+						system("cls");
+						cg.drawMap();
+						cg.resumeGame((HANDLE)t1.native_handle());
+						l(t1);
+						break;
+					}
+					case 2: {
+						cg.musicOff();
+						break;
+					}
+					case 3: {
+						system("cls");
+						exit(0);
+						break;
+					}
+					}
+					break;
+				}
+			}
+		}
+
 	}
 }
