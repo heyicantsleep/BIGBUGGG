@@ -5,113 +5,126 @@
 #include <iostream>
 #include <string>
 
-const int MAX_VEHICLE = 3;
-
 using namespace std;
 
 class CVEHICLE {
 protected:
-    int mX, mY;
+    int mX, mY; // position
+
 public:
-    virtual void move(int dx, int dy) = 0;
-     inline int getX() const { return mX; }
-     inline int getY() const { return mY; }
-     void setX(int x) { mX = x; }
-     void setY(int y) { mY = y; }
+    virtual void move(int dX, int dY) = 0;    // move the vehicle
+    virtual void draw() = 0;                  // draw the vehicle
+    inline virtual int getLength() const = 0; // get the length of the vehicle
+    inline int getX() const { return mX; }    // get the x position
+    inline int getY() const { return mY; }    // get the y position
+    void setX(int x) { mX = x; }              // set the x position
+    void setY(int y) { mY = y; }              // set the y position
 };
 
 class CTRUCK : public CVEHICLE {
 private:
     const string truck[4] = { R"(      ____        )", R"( ____//_]|_______ )",
-                       R"(|o _ |  -|  _  o| )", R"('-(o)------(o)--' )" };
-
+                             R"(|o _ |  -|  _  o| )", R"('-(o)------(o)--' )" };
+    const int truckLength = 17; // length of the truck
 public:
-    void move(int x, int y) {
-        if (mX > -18)
-            mX += x;
-        else {
-            setX(consoleWidth);
-        }
+    void move(int dX, int dY) {  // move the truck
+        if (mX > -getLength() - 1) // if the truck is on the map
+            mX += dX;                // move the truck
+        else                       // if the truck is off the map
+            setX(mapWidth);          // set the truck to the right edge of the screen
     }
 
-     void draw() {
-        for (int i = 0; i < 4; ++i) {
-            if (mX > 1)
-                gotoxy(mX, mY + i);
-            else
-                gotoxy(1, mY + i);
-            for (int j = 0; j < 18; ++j) {
-                if (mX + j > 0 && mX + j < consoleWidth) {
-                    cout << truck[i][j];
-                }
+    void draw() {                   // draw the truck
+        for (int i = 0; i < 4; ++i) { // for each line of the truck
+            if (mX > 1)                 // if the truck is on the map
+                gotoxy(mX, mY + i);       // set the cursor to the truck's position
+            else                        // if the truck is off the map
+                gotoxy(1, mY + i); // set the cursor to the left edge of the screen
+            for (int j = 0; j < getLength() + 1;
+                ++j) {                            // for each character in the line
+                if (mX + j > 0 && mX + j < mapWidth) // if the character is on the map
+                    cout << truck[i][j];               // print the character
             }
         }
     }
+
+    inline int getLength() const {
+        return truckLength;
+    } // get the length of the truck
 };
 
 class CCAR : public CVEHICLE {
 private:
-    const string car[4] = { R"(      _____      )", R"( ____//_|__\___  )",
-                     R"(|o _   -|-  _ o| )", R"('-(o)------(o)-' )"};
-
+    const string car[4] = { R"(     _____       )", R"(  __/__|_\\_____ )",
+                           R"( |o _ -|-    _ o|)", R"( '-(o)------(o)-')" };
+    const int carLength = 16; // length of the car
 public:
-    void move(int x, int y) {
-        if (mX > - 17) {
-            mX += x;
-        }
-        else {
-            setX(consoleWidth);
-        }
+    void move(int dX, int dY) { // move the car
+        if (mX <= mapWidth)       // if the car is on the map
+            mX += dX;               // move the car
+        else                      // if the car is off the map
+            setX(-getLength() - 1); // set the car to the left edge of the map
     }
 
-     void draw() {
-        for (int i = 0; i < 4; ++i) {
-            if (mX > 1)
-                gotoxy(mX, mY + i);
-            else
-                gotoxy(1, mY + i);
-            for (int j = 0; j < 17; ++j) {
-                if (mX + j > 0 && mX + j < consoleWidth) {
-                    cout << car[i][j];
-                }
+    void draw() {                   // draw the car
+        for (int i = 0; i < 4; ++i) { // for each line of the car
+            if (mX > 1)                 // if the car is on the map
+                gotoxy(mX, mY + i);       // set the cursor to the car's position
+            else                        // if the car is off the map
+                gotoxy(1, mY + i);        // set the cursor to the left edge of the map
+            for (int j = 0; j < getLength() + 1;
+                ++j) {                            // for each character in the line
+                if (mX + j > 0 && mX + j < mapWidth) // if the character is on the map
+                    cout << car[i][j];                 // print the character
             }
         }
     }
+
+    inline int getLength() const {
+        return carLength;
+    } // get the length of the car
 };
 
-
-class CAMBU : public CVEHICLE {
+class CAMBULANCE : public CVEHICLE {
 private:
-    const string ambu[4] = { R"(     __________ )", R"( ___//_]|  +  | )",
-                       R"(| _ |  -|  _  | )", R"('(o)------(o)-' )" };
+    const string ambulance[4] = { R"(     __________ )", R"( ___//_]|  +  | )",
+                                 R"(| _ |  -|  _  | )", R"('(o)------(o)-' )" };
+    const int ambulanceLength = 15; // length of the ambulancelance
 
 public:
-    void move(int x, int y) {
-        if (mX > -17)
-            mX += x;
-        else {
-            setX(consoleWidth);
-        }
+    void move(int dX, int dY) {  // move the ambulancelance
+        if (mX > -getLength() - 1) // if the ambulancelance is on the map
+            mX += dX;                // move the ambulancelance
+        else                       // if the ambulancelance is off the map
+            setX(mapWidth);          // set the ambulancelance to the right edge of the map
     }
 
-    void draw() {
-        for (int i = 0; i < 4; ++i) {
-            if (mX > 1)
-                gotoxy(mX, mY + i);
-            else
-                gotoxy(1, mY + i);
-            for (int j = 0; j < 16; ++j) {
-                if (mX + j > 0 && mX + j < consoleWidth) {
-                    if (j == 8 && i == 0) {
-                        textColor(196);
-                        cout << ambu[i][j];
-                        textColor(7);
+    void draw() {                   // draw the ambulancelance
+        for (int i = 0; i < 4; ++i) { // for each line of the ambulancelance
+            if (mX > 1)                 // if the ambulancelance is on the map
+                gotoxy(mX, mY + i);       // set the cursor to the ambulancelance's position
+            else                        // if the ambulancelance is off the map
+                gotoxy(1, mY + i);        // set the cursor to the left edge of the map
+            for (int j = 0; j < getLength() + 1;
+                ++j) {                              // for each character in the line
+                if (mX + j > 0 && mX + j < mapWidth) { // if the character is on the map
+                    if (j == 8 && i == 0) { // if the character is the first line and the
+                                            // 8th character
+                        textColor(196);       // set the text color to red
+                        cout << ambulance[i][j]; // print the character
+                        textColor(7);            // set the text color to white
                     }
-                    else
-                    cout << ambu[i][j];
+                    else // if the character is not the first line or the 8th
+                        // character
+                        cout << ambulance[i][j];
+                    // print the character
                 }
             }
         }
     }
+
+    inline int getLength() const {
+        return ambulanceLength;
+    } // get the length of the ambulancelance
 };
 #endif

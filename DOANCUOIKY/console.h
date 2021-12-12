@@ -4,8 +4,8 @@
 #include <Windows.h>
 #include <string.h>
 
-const int consoleHeight = 36;
-const int consoleWidth = 100;
+const int mapHeight = 36;
+const int mapWidth = 100;
 
 void fixConsole() {
 	HWND consoleWindow = GetConsoleWindow();

@@ -5,82 +5,84 @@
 #include <iostream>
 #include <string>
 
-const int MAX_ANIMAL = 3;
-
 using namespace std;
 
 class CANIMAL {
 protected:
-    int mX, mY;
+    int mX, mY; // position
 
 public:
-    virtual void move(int dx, int dy) = 0;
-     int getX() const { return mX; }
-     int getY() const { return mY; }
-     void setX(int x) { mX = x; }
-     void setY(int y) { mY = y; }
+    virtual void move(int dX, int dY) = 0;    // move the animal
+    virtual void draw() = 0;                  // draw the animal
+    inline virtual int getLength() const = 0; // get the length of the animal
+    inline int getX() const { return mX; }    // get the x position
+    inline int getY() const { return mY; }    // get the y position
+    void setX(int x) { mX = x; }              // set the x position
+    void setY(int y) { mY = y; }              // set the y position
 };
 
 class CDEER : public CANIMAL {
 private:
-    const string deer[4] = { R"(   //_\\)", R"(  __/". )", R"( / __ | )", R"(  || || )" };
+    const string deer[4] = { R"(//_\\   )", R"(."\__   )", R"( \ __ \ )",
+                            R"(  || || )" };
+    const int deerLength = 7; // length of the deer
 
 public:
-    void move(int dx, int dy) {
-        if (mX <= 100)
-            mX += dx;
-        else {
-            setX(-8);
-        }
+    void move(int dX, int dY) { // move the deer
+        if (mX > -getLength() - 1)       // if the deer is on the map
+            mX += dX;               // move the deer
+        else                      // if the deer is off the map
+            setX(mapWidth); // set the deer to the left of the map
     }
 
-     void draw() {
-        for (int i = 0; i < 4; ++i) {
-            if (mX > 1)
-                gotoxy(mX, mY + i);
-            else
-                gotoxy(1, mY + i);
-            for (int j = 0; j < 8; ++j) {
-                if (mX + j > 0 && mX + j < consoleWidth) {
-                    cout << deer[i][j];
-                }
+    void draw() {                   // draw the deer
+        for (int i = 0; i < 4; ++i) { // for each line
+            if (mX > 1)                 // if the deer is on the map
+                gotoxy(mX, mY + i);       // set the cursor to the deer
+            else                        // if the deer is off the map
+                gotoxy(1, mY + i);        // set the cursor to the left of the map
+            for (int j = 0; j < getLength() + 1; ++j) { // for each character
+                if (mX + j > 0 && mX + j < mapWidth)      // if the deer is on the map
+                    cout << deer[i][j];                     // print the deer
             }
         }
     }
+
+    inline int getLength() const {
+        return deerLength;
+    } // get the length of the deer
 };
 
 class CCOW : public CANIMAL {
 private:
     const string cow[4] = { R"(           (__))", R"(    ______/(oo))",
-                      R"( *\(      /(__))", R"(   ||w----||   )" };
-    int length = 15;
+                           R"( *\(      /(__))", R"(   ||w----||   )" };
+    const int cowLength = 14;
 
 public:
-    void move(int dx, int dy) {
-        if (mX <= 100)
-            mX += dx;
-        else {
-            setX(-15);
-        }
+    void move(int dX, int dY) {  // move the cow
+        if (mX <= mapWidth) // if the cow is on the map
+            mX += dX;                // move the cow
+        else                       // if the cow is off the map
+            setX(-getLength() - 1);          // set the cow to the right of the map
     }
 
-     int getLength() {
-        return length;
-    }
-
-     void draw() {
-        for (int i = 0; i < 4; ++i) {
-            if (mX > 1)
-                gotoxy(mX, mY + i);
-            else
-                gotoxy(1, mY + i);
-            for (int j = 0; j < 15; ++j) {
-                if (mX + j > 0 && mX + j < consoleWidth) {
-                    cout << cow[i][j];
+    void draw() {                   // draw the cow
+        for (int i = 0; i < 4; ++i) { // for each line
+            if (mX > 1)                 // if the cow is on the map
+                gotoxy(mX, mY + i);       // set the cursor to the cow
+            else                        // if the cow is off the map
+                gotoxy(1, mY + i);        // set the cursor to the left of the map
+            for (int j = 0; j < getLength() + 1; ++j) // for each character
+                if (mX + j > 0 && mX + j < mapWidth) {  // if the cow is on the map
+                    cout << cow[i][j];                    // print the cow
                 }
-            }
         }
     }
+
+    inline int getLength() const {
+        return cowLength;
+    } // get the length of the cow
 };
 
 #endif

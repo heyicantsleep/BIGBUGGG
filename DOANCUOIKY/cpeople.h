@@ -1,98 +1,81 @@
 ﻿#ifndef _CPEOPLE_H_
 #define _CPEOPLE_H_
 
+#include "cgame.h"
 #include "console.h"
+#include "cvehicle.h"
 #include <iostream>
 #include <string>
-#include "cvehicle.h"
-#include "cgame.h"
 
 using namespace std;
 
 class CPEOPLE {
 private:
-	int mX, mY;
-	bool mState;
-	const string people[3] = { "~D ", "(|)", "/ \\" };
+    int mX, mY;  // Position
+    bool mState; // State
+    const string people[3] = { "~D ", "(|)", "/ \\" };
 
 public:
-	CPEOPLE() {
-		mX = consoleWidth / 2 - 1;
-		mY = consoleHeight - 3;
-		mState = true;
-	}
+    CPEOPLE()
+        : mX(mapWidth / 2 - 1), mY(mapHeight - 3), mState(true) {} // Constructor
 
-	~CPEOPLE() {}
+    void Up(int dY) {  // Move up
+        if (mY - 1 != 1) // If not at the top
+            mY -= dY;      // Move up
+    }
 
-	void Up(int dy) {
-		if (mY - 1 != 1)
-			mY -= dy;
-	}
-	void Left(int dx) {
-		if (mX > 1)
-			mX -= dx;
-	}
+    void Down(int dY) {        // Move down
+        if (mY != mapHeight - 3) // If not at the bottom
+            mY += dY;              // Move down
+    }
 
-	void Right(int dy) {
-		if (mX + 3 < consoleWidth)
-			mX += dy;
-	}
+    void Left(int dX) { // Move left
+        if (mX > 1)       // If not at the left
+            mX -= dX;       // Move left
+    }
 
-	void Down(int dx) {
-		if (mY != consoleHeight - 3)
-			mY += dx;
-	}
+    void Right(int dX) {     // Move right
+        if (mX + 3 < mapWidth) // If not at the right
+            mX += dX;            // Move right
+    }
 
-	void setX(int i) {
-		mX = i;
-	}
+    void setX(int x) { mX = x; } // Set X
 
-	void setY(int i) {
-		mY = i;
-	}
+    void setY(int y) { mY = y; } // Set Y
 
+    void setState(bool i) { mState = i; } // Set state
 
-	bool isFinish() {
-		return mY < 5;
-	}
+    inline bool isFinish() { return mY < 5; } // If finish
 
-	void setState(bool j) {
-		mState = j;
-	}
+    inline bool isDead() { return !mState; } // If dead
 
-	bool isDead() {
-		return !mState;
-	}
+    inline int getX() { return mX; } // Get X
 
-	int getX() { return mX; }
+    inline int getY() { return mY; } // Get Y
 
-	int getY() { return mY; }
+    inline bool getState() { return mState; } // Get state
 
-	bool getState() {
-		return mState;
-	}
+    void draw() {                   // Draw people
+        textColor(6);                 // Set color
+        for (int i = 0; i < 3; ++i) { // For each line
+            gotoxy(mX, mY + i);         // Set position
+            cout << people[i];          // Print people
+        }
+        textColor(7); // Set color
+    }
 
-	void draw() {
-		textColor(6);
-		for (int i = 0; i < 3; ++i) {
-			gotoxy(mX, mY + i);
-			cout << people[i];
-		}
-		textColor(7);
-	}
+    void clear() {                  // Clear people
+        for (int i = 0; i < 3; ++i) { // For each line
+            gotoxy(mX, mY + i);         // Set position
+            cout << "   ";              // Print empty
+        }
+    }
 
-	void clear() {
-		for (int i = 0; i < 3; ++i) {
-			gotoxy(mX, mY + i);
-			cout << "   ";
-		}
-	}
-
-	void reset() {
-		mX = consoleWidth / 2 - 1;
-		mY = consoleHeight - 3;
-		mState = true;
-	}
+    void reset() {
+        mX = mapWidth / 2 - 1; // Reset X
+        mY = mapHeight - 3;    // Reset Y
+        mState = true;         // Reset state
+    }
 };
 
 #endif
