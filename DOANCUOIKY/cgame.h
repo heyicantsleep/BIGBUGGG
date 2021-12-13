@@ -11,6 +11,7 @@
 #include <iostream>
 #include <time.h>
 #include <vector>
+#include "graffic.h"
 
 const int MAX_OBJECT = 3;
 const int MIN_OBJECT = 2;
@@ -74,29 +75,26 @@ public:
 
 	void drawMap() { // draw the map
 		textColor(14); // set the color to yellow
-
-		gotoxy(1, 5); // set the position
-		cout << R"(
-														 ____ ____ ____ ____ ____ 
-														||N |||H |||O |||M |||9 ||
-														||__|||__|||__|||__|||__||
-														|/__\|/__\|/__\|/__\|/__\|
-)";
-
-		gotoxy(1, MAP_HEIGHT / 2.5 + 3); // set the position
+		gotoxy(1, MAP_HEIGHT / 3 + 3); // set the position
 		cout
-			<< R"(									   
-										         	                 ________________________ 
-										         	           	| Press W,A,S,D to move  |
-										               	                | Press L to save game   |
-										         	                | Press P to pause game  |
-										         	           	| Press ESC to exit      |
-										         	           	 ------------------------ 
-										         	           	         \  ^__^
-										         	           	          \ (Oo)\_______
-										         	           	            (__)\       )\/\
-										         	           	                ||----w |
-										         	           	                ||     ||)";
+			<< R"(							
+													        	   _____ 
+													        	  ||W ^||
+													        	  ||___||
+														     _____|/___\|_____
+														    ||A <|||S v|||D >||
+														    ||___|||___|||___||
+														    |/___\|/___\|/___\|
+														     _____ 
+														    ||P  ||
+														    ||___||  Pause Game
+														    |/___\|	
+														     _____ 
+														    ||L  ||
+														    ||___||  Save Game
+														    |/___\|	   
+											
+)";
 
 		for (int i = 0; i < MAP_HEIGHT; ++i) { // draw the map
 			gotoxy(0, i);                       // set the position
@@ -169,10 +167,12 @@ public:
 	}
 	void drawGame() {                        // draw the game
 		for (int i = 0; i < (level >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
-			truck[i].draw();                     // draw the truck
-			car[i].draw();                       // draw the car
 			deer[i].draw();                      // draw the deer
 			cow[i].draw();                       // draw the cow
+		}
+		for (int i = 0; i < (level >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
+			truck[i].draw();                     // draw the truck
+			car[i].draw();                       // draw the car
 		}
 		people.draw(); // draw the people
 	}
@@ -213,7 +213,7 @@ public:
 	void updatePosVehicle() { // update the position of the vehicle
 		if (truckTraffic.getState() == false) {           // if the truck moving
 			truckTraffic.drawGreenLight(truck->getY() - 1); // draw the green light
-			for (int i = 0; i < (level >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i)            // for each object
+			for (int i = 0; i < (level >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i)            // for each object
 				truck[i].move(-1, 0);                         // move the truck
 			if (truckTraffic.updateTime() < 0) {            // if the time is up
 				truckTraffic.setState(true);                  // set the state to true
@@ -230,7 +230,7 @@ public:
 
 		if (carTraffic.getState() == false) {         // if the car moving
 			carTraffic.drawGreenLight(car->getY() - 1); // draw the green light
-			for (int i = 0; i < (level >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i)        // for each object
+			for (int i = 0; i < (level >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i)        // for each object
 				car[i].move(1, 0);                       // move the car
 			if (carTraffic.updateTime() < 0) {          // if the time is up
 				carTraffic.setState(true);                // set the state to true
@@ -321,19 +321,21 @@ public:
 
 	void randomPos() {
 		if (level == 2) {
-			delete[] truck;
-			delete[] car;
 			delete[] deer;
 			delete[] cow;
-			truck = new CTRUCK[MAX_OBJECT];
-			car = new CCAR[MAX_OBJECT];
 			deer = new CDEER[MAX_OBJECT];
 			cow = new CCOW[MAX_OBJECT];
+		}
+		if (level == 3) {
+			delete[] truck;
+			delete[] car;
+			truck = new CTRUCK[MAX_OBJECT];
+			car = new CCAR[MAX_OBJECT];
 		}
 		srand((unsigned)time(0));                         // randomize the seed
 		random_shuffle(pos.begin(), pos.end()); // randomize the position
 
-		for (int i = 0; i < MAX_OBJECT; ++i) { // for each object
+		for (int i = 0; i < (level >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
 			int x = i * 30 + (rand() % (10));    // randomize the x position
 			srand((unsigned)time(0));                      // randomize the seed
 			truck[i].setX(10 * i + x +
@@ -342,8 +344,10 @@ public:
 
 			srand((unsigned)time(0));                        // randomize the seed
 			car[i].setX(5 * i + x + rand() % (5)); // set the x position of the car
-			car[i].setY(pos[1]);                     // set the y position of the car
-
+			car[i].setY(pos[1]);
+		}                     // set the y position of the car
+		for (int i = 0; i < (level >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
+			int x = i * 30 + (rand() % (10));    // randomize the x position
 			srand((unsigned)time(0));                          // randomize the seed
 			deer[i].setX(10 * i + x + rand() % (5)); // set the x position of the deer
 			deer[i].setY(pos[2]);                      // set the y position of the deer
@@ -476,7 +480,14 @@ public:
 		}
 	}
 
-	void musicOff() { PlaySound(NULL, 0, 0); }
+	void musicOff(int i) {
+		if (i == 0)
+			PlaySound(NULL, 0, 0);
+		else if (i == 1)
+			PlaySound(TEXT("song.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+		else if (i == 2)
+			PlaySound(TEXT("song1.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+	}
 
 	void drawPause() {
 		gotoxy(120, 30);

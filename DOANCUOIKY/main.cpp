@@ -7,6 +7,7 @@ CGAME cg;
 char MOVING;
 int speed = 50;
 bool IS_RUNNING = true;
+int i = 0;
 
 void SubThread() {
     while (IS_RUNNING) {
@@ -28,6 +29,12 @@ void SubThread() {
     }
 }
 
+void save() {
+    cg.saveGame();
+    system("cls");
+    cg.drawMap();
+}
+
 auto l = [](thread& t1) {
     while (true) {
         char temp = toupper(_getch());
@@ -42,10 +49,9 @@ auto l = [](thread& t1) {
                 cg.pauseGame(t1.native_handle());
             }
             else if (temp == 'L') {
+                thread t2(save);
                 cg.pauseGame(t1.native_handle());
-                cg.saveGame();
-                system("cls");
-                cg.drawMap();
+                t2.join();
                 cg.resumeGame(t1.native_handle());
             }
             else {
@@ -156,7 +162,10 @@ int main() {
                         break;
                     }
                     case 2: {
-                        cg.musicOff();
+                        cg.musicOff(i);
+                        i++;
+                        if (i > 3)
+                            i = 0;
                         break;
                     }
                     case 3: {
