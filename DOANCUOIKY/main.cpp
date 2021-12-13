@@ -6,10 +6,11 @@
 CGAME cg;
 char MOVING;
 int speed = 50;
+bool IS_RUNNING = true;
 
 void SubThread() {
-    while (1) {
-        while (!cg.getPeople().isDead()) {
+    while (IS_RUNNING) {
+        if (!cg.getPeople().isDead()) {
             cg.updatePosPeople(MOVING);
             MOVING = ' ';
             cg.printScore();
@@ -18,7 +19,7 @@ void SubThread() {
             cg.drawGame();
             cg.isImpact();
             cg.reset();
-            cg.speedUp(speed);
+            cg.setSpeed(speed);
             if (cg.getPeople().isDead()) {
                 cg.drawDie();
                 cg.drawContinue();
@@ -32,7 +33,8 @@ auto l = [](thread& t1) {
         char temp = toupper(_getch());
         if (!cg.getPeople().isDead()) {
             if (temp == 27) {
-                cg.pauseGame(t1.native_handle());
+                IS_RUNNING = false;
+                t1.join();
                 cg.resetGame();
                 break;
             }
@@ -44,10 +46,10 @@ auto l = [](thread& t1) {
                 cg.saveGame();
                 system("cls");
                 cg.drawMap();
-                cg.resumeGame((HANDLE)t1.native_handle());
+                cg.resumeGame(t1.native_handle());
             }
             else {
-                cg.resumeGame((HANDLE)t1.native_handle());
+                cg.resumeGame(t1.native_handle());
                 MOVING = temp; // Cập nhật bước di chuyển
             }
         }
@@ -58,8 +60,9 @@ auto l = [](thread& t1) {
                 cg.resetGame();
             }
             else {
+                IS_RUNNING = false;
+                t1.join();
                 cg.resetGame();
-                cg.pauseGame(t1.native_handle());
                 break;
             }
         }
@@ -74,15 +77,14 @@ int main() {
     resizeConsole(1100, 630);
     hideCursor();
     system("cls");
-    thread t1(SubThread);
-    cg.pauseGame(t1.native_handle());
+    //cg.pauseGame(t1.native_handle());
     system("cls");
     PlaySound(TEXT("song.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     const string menu[] = { " New Game  ", " Load Game ", " Settings  ",
                            " Exit      " };
     int pos = 0;
-    const int y = mapHeight / 2;
-    const int x = mapWidth / 1.5 + 5;
+    const int y = MAP_HEIGHT / 2;
+    const int x = MAP_WIDTH / 1.5 + 5;
     int flag = 0;
     while (1) {
         system("cls");
@@ -139,7 +141,8 @@ int main() {
                     case 0: {
                         system("cls");
                         cg.drawMap();
-                        cg.resumeGame((HANDLE)t1.native_handle());
+                        IS_RUNNING = true;
+                        thread t1(SubThread);
                         l(t1);
                         break;
                     }
@@ -147,7 +150,8 @@ int main() {
                         cg.loadGame();
                         system("cls");
                         cg.drawMap();
-                        cg.resumeGame((HANDLE)t1.native_handle());
+                        IS_RUNNING = true;
+                        thread t1(SubThread);
                         l(t1);
                         break;
                     }

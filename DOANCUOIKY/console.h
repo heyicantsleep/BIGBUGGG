@@ -4,8 +4,8 @@
 #include <Windows.h>
 #include <string.h>
 
-const int mapHeight = 36;
-const int mapWidth = 100;
+const int MAP_HEIGHT = 36;
+const int MAP_WIDTH = 100;
 
 void fixConsole() {
 	HWND consoleWindow = GetConsoleWindow();

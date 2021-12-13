@@ -17,7 +17,7 @@ private:
 
 public:
     CPEOPLE()
-        : mX(mapWidth / 2 - 1), mY(mapHeight - 3), mState(true) {} // Constructor
+        : mX(MAP_WIDTH / 2 - 1), mY(MAP_HEIGHT - 3), mState(true) {} // Constructor
 
     void Up(int dY) {  // Move up
         if (mY - 1 != 1) // If not at the top
@@ -25,7 +25,7 @@ public:
     }
 
     void Down(int dY) {        // Move down
-        if (mY != mapHeight - 3) // If not at the bottom
+        if (mY != MAP_HEIGHT - 3) // If not at the bottom
             mY += dY;              // Move down
     }
 
@@ -35,7 +35,7 @@ public:
     }
 
     void Right(int dX) {     // Move right
-        if (mX + 3 < mapWidth) // If not at the right
+        if (mX + 3 < MAP_WIDTH) // If not at the right
             mX += dX;            // Move right
     }
 
@@ -52,8 +52,6 @@ public:
     inline int getX() { return mX; } // Get X
 
     inline int getY() { return mY; } // Get Y
-
-    inline bool getState() { return mState; } // Get state
 
     void draw() {                   // Draw people
         textColor(6);                 // Set color
@@ -72,8 +70,8 @@ public:
     }
 
     void reset() {
-        mX = mapWidth / 2 - 1; // Reset X
-        mY = mapHeight - 3;    // Reset Y
+        mX = MAP_WIDTH / 2 - 1; // Reset X
+        mY = MAP_HEIGHT - 3;    // Reset Y
         mState = true;         // Reset state
     }
 };

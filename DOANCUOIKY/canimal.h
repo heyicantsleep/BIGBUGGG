@@ -28,21 +28,21 @@ private:
     const int deerLength = 7; // length of the deer
 
 public:
-    void move(int dX, int dY) { // move the deer
+    void move(int dX, int dY)  { // move the deer
         if (mX > -getLength() - 1)       // if the deer is on the map
             mX += dX;               // move the deer
         else                      // if the deer is off the map
-            setX(mapWidth); // set the deer to the left of the map
+            setX(MAP_WIDTH); // set the deer to the left of the map
     }
 
-    void draw() {                   // draw the deer
+    void draw()  {                   // draw the deer
         for (int i = 0; i < 4; ++i) { // for each line
             if (mX > 1)                 // if the deer is on the map
                 gotoxy(mX, mY + i);       // set the cursor to the deer
             else                        // if the deer is off the map
                 gotoxy(1, mY + i);        // set the cursor to the left of the map
             for (int j = 0; j < getLength() + 1; ++j) { // for each character
-                if (mX + j > 0 && mX + j < mapWidth)      // if the deer is on the map
+                if (mX + j > 0 && mX + j < MAP_WIDTH)      // if the deer is on the map
                     cout << deer[i][j];                     // print the deer
             }
         }
@@ -61,7 +61,7 @@ private:
 
 public:
     void move(int dX, int dY) {  // move the cow
-        if (mX <= mapWidth) // if the cow is on the map
+        if (mX <= MAP_WIDTH) // if the cow is on the map
             mX += dX;                // move the cow
         else                       // if the cow is off the map
             setX(-getLength() - 1);          // set the cow to the right of the map
@@ -74,7 +74,7 @@ public:
             else                        // if the cow is off the map
                 gotoxy(1, mY + i);        // set the cursor to the left of the map
             for (int j = 0; j < getLength() + 1; ++j) // for each character
-                if (mX + j > 0 && mX + j < mapWidth) {  // if the cow is on the map
+                if (mX + j > 0 && mX + j < MAP_WIDTH) {  // if the cow is on the map
                     cout << cow[i][j];                    // print the cow
                 }
         }

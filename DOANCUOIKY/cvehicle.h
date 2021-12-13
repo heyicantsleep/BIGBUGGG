@@ -31,7 +31,7 @@ public:
         if (mX > -getLength() - 1) // if the truck is on the map
             mX += dX;                // move the truck
         else                       // if the truck is off the map
-            setX(mapWidth);          // set the truck to the right edge of the screen
+            setX(MAP_WIDTH);          // set the truck to the right edge of the screen
     }
 
     void draw() {                   // draw the truck
@@ -42,7 +42,7 @@ public:
                 gotoxy(1, mY + i); // set the cursor to the left edge of the screen
             for (int j = 0; j < getLength() + 1;
                 ++j) {                            // for each character in the line
-                if (mX + j > 0 && mX + j < mapWidth) // if the character is on the map
+                if (mX + j > 0 && mX + j < MAP_WIDTH) // if the character is on the map
                     cout << truck[i][j];               // print the character
             }
         }
@@ -60,7 +60,7 @@ private:
     const int carLength = 16; // length of the car
 public:
     void move(int dX, int dY) { // move the car
-        if (mX <= mapWidth)       // if the car is on the map
+        if (mX <= MAP_WIDTH)       // if the car is on the map
             mX += dX;               // move the car
         else                      // if the car is off the map
             setX(-getLength() - 1); // set the car to the left edge of the map
@@ -74,7 +74,7 @@ public:
                 gotoxy(1, mY + i);        // set the cursor to the left edge of the map
             for (int j = 0; j < getLength() + 1;
                 ++j) {                            // for each character in the line
-                if (mX + j > 0 && mX + j < mapWidth) // if the character is on the map
+                if (mX + j > 0 && mX + j < MAP_WIDTH) // if the character is on the map
                     cout << car[i][j];                 // print the character
             }
         }
@@ -96,7 +96,7 @@ public:
         if (mX > -getLength() - 1) // if the ambulancelance is on the map
             mX += dX;                // move the ambulancelance
         else                       // if the ambulancelance is off the map
-            setX(mapWidth);          // set the ambulancelance to the right edge of the map
+            setX(MAP_WIDTH);          // set the ambulancelance to the right edge of the map
     }
 
     void draw() {                   // draw the ambulancelance
@@ -107,7 +107,7 @@ public:
                 gotoxy(1, mY + i);        // set the cursor to the left edge of the map
             for (int j = 0; j < getLength() + 1;
                 ++j) {                              // for each character in the line
-                if (mX + j > 0 && mX + j < mapWidth) { // if the character is on the map
+                if (mX + j > 0 && mX + j < MAP_WIDTH) { // if the character is on the map
                     if (j == 8 && i == 0) { // if the character is the first line and the
                                             // 8th character
                         textColor(196);       // set the text color to red
