@@ -45,7 +45,7 @@ public:
 
     void setState(bool i) { mState = i; } // Set state
 
-    inline bool isFinish() { return mY < 5; } // If finish
+    inline bool isFinish() { return mY == 3; } // If finish
 
     inline bool isDead() { return !mState; } // If dead
 

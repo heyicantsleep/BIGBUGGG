@@ -66,34 +66,31 @@ public:
 
 
 	void setSpeed(int speed) {          // speed up the game
-		if (getScore() * 5 < speed)      // if the score is less than the speed
+		if (getScore() * 5 < speed - 10)      // if the score is less than the speed
 			Sleep(speed - getScore() * 5); // sleep for the difference
 		else                             // else
-			Sleep(5);                      // sleep for 5 ms
+			Sleep(15);                      // sleep for 5 ms
 	}
 
 
 	void drawMap() { // draw the map
 		textColor(14); // set the color to yellow
-		gotoxy(1, MAP_HEIGHT / 3 + 3); // set the position
+		gotoxy(1, MAP_HEIGHT / 1.8); // set the position
 		cout
 			<< R"(							
-													        	   _____ 
-													        	  ||W ^||
-													        	  ||___||
-														     _____|/___\|_____
-														    ||A <|||S v|||D >||
-														    ||___|||___|||___||
-														    |/___\|/___\|/___\|
-														     _____ 
-														    ||P  ||
-														    ||___||  Pause Game
-														    |/___\|	
-														     _____ 
-														    ||L  ||
-														    ||___||  Save Game
-														    |/___\|	   
-											
+														           ______ 
+														          ||W  ^||
+														          ||____||
+														    ______|/____\|______
+														   ||A  <|||S  v|||D  >||
+														   ||____|||____|||____||
+														   |/____\|/____\|/____\|
+
+														    ______ ______ ______
+														   ||Esc |||L   |||P   ||
+														   ||____|||____|||____||
+														   |/____\|/____\|/____\|
+														     Exit   Save   Pause
 )";
 
 		for (int i = 0; i < MAP_HEIGHT; ++i) { // draw the map
@@ -138,11 +135,13 @@ public:
 	} // get the score
 
 	void printScore() {                      // print the score
-		gotoxy(100 + 20, 14);                  // set the position
-		cout << "SCORE: " << score * 100; // print the score
-		gotoxy(100 + 20, 15);                  // set the position
-		cout << "level: " << level; // print the score
-
+		for (int i = 0; i < 7; i++) {
+			gotoxy(110, 5 + i);
+			cout
+				<< R"(                            )";
+		}
+		textColor(11);
+		asci(score * 10);
 	}
 
 
@@ -255,7 +254,7 @@ public:
 	}
 
 	bool isImpact() {                        // check if the people hit the object
-		for (int i = 0; i < (level >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
+		for (int i = 0; i < (level >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
 			if (truck[i].getY() ==
 				people.getY() -
 				1) // if the truck is on the same line	with the people
@@ -274,6 +273,7 @@ public:
 					people.setState(0);           // set the state to 0
 					return true;                  // return true
 				}
+		}for (int i = 0; i < (level >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) {
 			if (deer[i].getY() ==
 				people.getY() - 1) // if the deer is on the same line
 				if (abs(deer[i].getX() - people.getX()) < 3 ||
@@ -378,10 +378,11 @@ public:
 
 	void saveGame() {
 		char fileName[9];
-		gotoxy(MAP_WIDTH + 12, 30);
+		gotoxy(MAP_WIDTH + 13, MAP_HEIGHT / 2.2);
 		textColor(224);
-		cout << " Enter file name:          ";
-		gotoxy(MAP_WIDTH + 30, 30);
+		cout << " Enter file name:         ";
+		gotoxy(MAP_WIDTH + 31, MAP_HEIGHT/2.2);
+		textColor(224);
 		cin.getline(fileName, 8);
 		textColor(7);
 		string temp = fileName;
@@ -444,9 +445,9 @@ public:
 		listTXT();
 		string s;
 		textColor(224);
-		gotoxy(MAP_WIDTH / 1.5, MAP_HEIGHT / 2 - 2);
+		gotoxy(MAP_WIDTH / 1.5 + 1, 1);
 		cout << " Enter file name:          ";
-		gotoxy(MAP_WIDTH / 1.2 + 1, MAP_HEIGHT / 2 - 2);
+		gotoxy(MAP_WIDTH / 1.2 + 2, 1);
 		cin >> s;
 		textColor(7);
 		s += ".txt";
