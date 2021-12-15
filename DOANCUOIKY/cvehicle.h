@@ -1,9 +1,9 @@
 #ifndef _CVEHICLE_H_
 #define _CVEHICLE_H_
 
-#include "console.h"
 #include <iostream>
 #include <string>
+#include "api.h"
 
 using namespace std;
 
@@ -28,7 +28,7 @@ private:
     const int truckLength = 17; // length of the truck
 public:
     void move(int dX, int dY) {  // move the truck
-        if (mX > -getLength() - 1) // if the truck is on the map
+        if (mX >= -getLength()) // if the truck is on the map
             mX += dX;                // move the truck
         else                       // if the truck is off the map
             setX(MAP_WIDTH);          // set the truck to the right edge of the screen
@@ -40,8 +40,7 @@ public:
                 gotoxy(mX, mY + i);       // set the cursor to the truck's position
             else                        // if the truck is off the map
                 gotoxy(1, mY + i); // set the cursor to the left edge of the screen
-            for (int j = 0; j < getLength() + 1;
-                ++j) {                            // for each character in the line
+            for (int j = 0; j < getLength() + 1; ++j) { // for each character in the line
                 if (mX + j > 0 && mX + j < MAP_WIDTH) // if the character is on the map
                     cout << truck[i][j];               // print the character
             }
@@ -63,7 +62,7 @@ public:
         if (mX <= MAP_WIDTH)       // if the car is on the map
             mX += dX;               // move the car
         else                      // if the car is off the map
-            setX(-getLength() - 1); // set the car to the left edge of the map
+            setX(-getLength()); // set the car to the left edge of the map
     }
 
     void draw() {                   // draw the car
@@ -93,7 +92,7 @@ private:
 
 public:
     void move(int dX, int dY) {  // move the ambulancelance
-        if (mX > -getLength() - 1) // if the ambulancelance is on the map
+        if (mX >= -getLength()) // if the ambulancelance is on the map
             mX += dX;                // move the ambulancelance
         else                       // if the ambulancelance is off the map
             setX(MAP_WIDTH);          // set the ambulancelance to the right edge of the map
@@ -110,7 +109,7 @@ public:
                 if (mX + j > 0 && mX + j < MAP_WIDTH) { // if the character is on the map
                     if (j == 8 && i == 0) { // if the character is the first line and the
                                             // 8th character
-                        textColor(196);       // set the text color to red
+                        textColor(68);       // set the text color to red
                         cout << ambulance[i][j]; // print the character
                         textColor(7);            // set the text color to white
                     }

@@ -1,20 +1,20 @@
 ﻿#ifndef _CGAME_H_
 #define _CGAME_H_
 
-#include "canimal.h"
-#include "cpeople.h"
-#include "ctraffic.h"
-#include "cvehicle.h"
 #include <Windows.h>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <time.h>
 #include <vector>
+#include "cpeople.h"
+#include "canimal.h"
+#include "cvehicle.h"
+#include "ctraffic.h"
 #include "graffic.h"
 
-const int MAX_OBJECT = 3;
 const int MIN_OBJECT = 2;
+const int MAX_OBJECT = 3;
 
 using namespace std;
 
@@ -28,79 +28,82 @@ private:
 	CDEER* deer;
 	CCOW* cow;
 	CPEOPLE people;
-	int score;
-	int count;
-	int level;
 	CTRAFFIC truckTraffic{ 100 + rand() % 50 };
 	CTRAFFIC carTraffic{ 100 };
+	int mScore;
+	int mCount;
+	int mLevel;
 
 public:
 	CGAME() {
-		score = 0;
-		count = 0;
-		level = 1;
+		mScore = 0;
+		mCount = 0;
+		mLevel = 1;
 		truck = new CTRUCK[MIN_OBJECT];
 		car = new CCAR[MIN_OBJECT];
 		deer = new CDEER[MIN_OBJECT];
 		cow = new CCOW[MIN_OBJECT];
 		ambulance = new CAMBULANCE;
 		srand((unsigned)time(0));
-		random_shuffle(pos.begin(),
-			pos.end()); // randomize the positions of the objects
+		random_shuffle(pos.begin(), pos.end()); // randomize the positions of the objects
 		for (int i = 0; i < MIN_OBJECT; ++i) { // create the objects
 			int x = i * 30 + (rand() % (10));    // randomize the x position
 			srand((unsigned)time(0));
-			truck[i].setX(10 * i + x + rand() % (5));
+			truck[i].setX(30 * i + x + rand() % (10));
 			truck[i].setY(pos[0]);
 			srand((unsigned)time(0));
-			car[i].setX(5 * i + x + rand() % (5));
+			car[i].setX(30 * i + x + rand() % (10));
 			car[i].setY(pos[1]);
 			srand((unsigned)time(0));
-			deer[i].setX(10 * i + x + rand() % (5));
+			deer[i].setX(20 * i + x + rand() % (10));
 			deer[i].setY(pos[2]);
 			srand((unsigned)time(0));
-			cow[i].setX(5 * i + x + rand() % (5));
+			cow[i].setX(15 * i + x + rand() % (10));
 			cow[i].setY(pos[3]);
 		}
 	}
 
+	~CGAME() { // destructor
+		delete[] truck;
+		delete[] car;
+		delete ambulance;
+		delete[] deer;
+		delete[] cow;
+	}
+
 
 	void setSpeed(int speed) {          // speed up the game
-		if (getScore() * 5 < speed - 10)      // if the score is less than the speed
+		if (getScore() * 5 < speed - 10)      // if the mScore is less than the speed
 			Sleep(speed - getScore() * 5); // sleep for the difference
 		else                             // else
-			Sleep(15);                      // sleep for 5 ms
+			Sleep(15);                      // sleep for 15 ms
 	}
 
 
 	void drawMap() { // draw the map
 		textColor(14); // set the color to yellow
-		gotoxy(1, MAP_HEIGHT / 1.8); // set the position
+		gotoxy(1, MAP_HEIGHT / 2); // set the position
 		cout
 			<< R"(							
 														           ______ 
-														          ||W  ^||
-														          ||____||
+														          ||W   || 
+														          ||____|| Up
 														    ______|/____\|______
-														   ||A  <|||S  v|||D  >||
+														   ||A   |||S   |||D   ||
 														   ||____|||____|||____||
 														   |/____\|/____\|/____\|
-
+														     Left   Down   Right
 														    ______ ______ ______
 														   ||Esc |||L   |||P   ||
 														   ||____|||____|||____||
 														   |/____\|/____\|/____\|
 														     Exit   Save   Pause
 )";
-
 		for (int i = 0; i < MAP_HEIGHT; ++i) { // draw the map
 			gotoxy(0, i);                       // set the position
-			cout << char(186) << '\n';          // draw the map
-		}
-		for (int i = 0; i < MAP_HEIGHT; ++i) { // draw the map
-			gotoxy(0, i);                       // set the position
+			cout << char(186);          // draw the map
 			gotoxy(MAP_WIDTH, i);                // set the position
-			cout << char(186) << '\n';          // draw the map
+			cout << char(186);          // draw the map
 		}
 
 		for (int i = 0; i < 5; ++i) {                     // draw the map
@@ -123,85 +126,82 @@ public:
 			cout << char(205);                 // draw the map
 		}
 		cout << char(188); // draw the map
+	}
 
-		textColor(7); // set the color to white
+	void levelUp() {
+		if ((mCount / 5) == mLevel) {
+			mLevel++;
+			randomPos();
+			system("cls");
+			drawMap();
+		};
 	}
 
 	inline int getScore() {
-		if ((count / 5) == level) {
-			level++;  randomPos(); system("cls"); drawMap();
-		};
-		return score;
-	} // get the score
+		return mScore;
+	}
 
-	void printScore() {                      // print the score
+	void drawScore() {
+		textColor(11);
+		asci(mScore * 10);
+	}
+
+	void clearScore() {
 		for (int i = 0; i < 7; i++) {
-			gotoxy(110, 5 + i);
+			gotoxy(MAP_WIDTH + 7, 5 + i);
 			cout
 				<< R"(                            )";
 		}
-		textColor(11);
-		asci(score * 10);
 	}
 
+	void updateScore() {
+		mScore += mLevel;
+		mCount++;
+	}
 
-	void reset() {             // reset the game
-		if (people.isFinish()) { // if the people is at the top
-			for (int i = 1; i < 6; i++) {
-				gotoxy(1, i);
-				cout
-					<< R"(                                                                                                   )";
-			}
-			people.draw();
-			gotoxy(people.getX() + 3, people.getY());
-			cout << "+" << level * 100;
-			Sleep(250);
-			gotoxy(people.getX() + 3, people.getY());
-			cout << "    ";
-			people.setX(MAP_WIDTH / 2 - 1);
-			people.setY(MAP_HEIGHT - 3); // reset the people
-			score += level;                    // increment the score
-			count++;
+	void updatePeoplePos() {             // reset the game
+		for (int i = 3; i < 6; ++i) {
+			gotoxy(1, i);
+			cout
+				<< R"(                                                                                                   )";
 		}
+		people.draw();
+		gotoxy(people.getX() + 3, people.getY());
+		cout << "+" << mLevel * 10;
+		Sleep(150);
+		gotoxy(people.getX() + 3, people.getY());
+		cout << "     ";
+		people.setX(MAP_WIDTH / 2 - 1);
+		people.setY(MAP_HEIGHT - 3); // reset the people
+
 	}
+
 	void drawGame() {                        // draw the game
-		for (int i = 0; i < (level >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
+		for (int i = 0; i < (mLevel >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
 			deer[i].draw();                      // draw the deer
 			cow[i].draw();                       // draw the cow
 		}
-		for (int i = 0; i < (level >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
+		for (int i = 0; i < (mLevel >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
 			truck[i].draw();                     // draw the truck
 			car[i].draw();                       // draw the car
 		}
 		people.draw(); // draw the people
 	}
 
-	~CGAME() { // destructor
-		delete[] truck;
-		delete[] car;
-		delete ambulance;
-		delete[] deer;
-		delete[] cow;
-	}
-
 	inline CPEOPLE getPeople() { return people; } // get the people
-
-	void pauseGame(HANDLE t) { SuspendThread(t); } // pause the game
-
-	void resumeGame(HANDLE t) { ResumeThread(t); } // resume the game
 
 	void updatePosPeople(char ch) { // update the position of the people
 		if (ch == 'A') {              // if the key is A
 			people.clear();             // clear the people
 			people.Left(4);             // move the people to the left
 		}
-		else if (ch == 'W') {       // if the key is W
-			people.clear();             // clear the people
-			people.Up(6);               // move the people to the up
-		}
 		else if (ch == 'D') {       // if the key is D
 			people.clear();             // clear the people
 			people.Right(4);            // move the people to the right
+		}
+		else if (ch == 'W') {       // if the key is W
+			people.clear();             // clear the people
+			people.Up(6);               // move the people to the up
 		}
 		else if (ch == 'S') {       // if the key is S
 			people.clear();             // clear the people
@@ -212,7 +212,7 @@ public:
 	void updatePosVehicle() { // update the position of the vehicle
 		if (truckTraffic.getState() == false) {           // if the truck moving
 			truckTraffic.drawGreenLight(truck->getY() - 1); // draw the green light
-			for (int i = 0; i < (level >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i)            // for each object
+			for (int i = 0; i < (mLevel >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i)            // for each object
 				truck[i].move(-1, 0);                         // move the truck
 			if (truckTraffic.updateTime() < 0) {            // if the time is up
 				truckTraffic.setState(true);                  // set the state to true
@@ -223,13 +223,13 @@ public:
 			truckTraffic.drawRedLight(truck->getY() - 1); // draw the red light
 			if (truckTraffic.updateTime() < 0) {          // if the time is up
 				truckTraffic.setState(false);               // set the state to false
-				truckTraffic.setTime(150);                  // set the time to 150
+				truckTraffic.setTime(100);                  // set the time to 150
 			}
 		}
 
 		if (carTraffic.getState() == false) {         // if the car moving
 			carTraffic.drawGreenLight(car->getY() - 1); // draw the green light
-			for (int i = 0; i < (level >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i)        // for each object
+			for (int i = 0; i < (mLevel >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i)        // for each object
 				car[i].move(1, 0);                       // move the car
 			if (carTraffic.updateTime() < 0) {          // if the time is up
 				carTraffic.setState(true);                // set the state to true
@@ -239,22 +239,22 @@ public:
 		else {
 			carTraffic.drawRedLight(car->getY() - 1); // draw the red light
 			if (carTraffic.updateTime() < 0) {        // if the time is up
-				carTraffic.setTime(150 +
-					rand() % 50); // set the time to 150 + random number
 				carTraffic.setState(false);      // set the state to false
+				carTraffic.setTime(100 +
+					rand() % 50); // set the time to 150 + random number
 			}
 		}
 	}
 
 	void updatePosAnimal() {                 // update the position of the animal
-		for (int i = 0; i < (level >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
+		for (int i = 0; i < (mLevel >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
 			deer[i].move(-1, 0);                  // move the deer
 			cow[i].move(1, 0);                   // move the cow
 		}
 	}
 
 	bool isImpact() {                        // check if the people hit the object
-		for (int i = 0; i < (level >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
+		for (int i = 0; i < (mLevel >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
 			if (truck[i].getY() ==
 				people.getY() -
 				1) // if the truck is on the same line	with the people
@@ -273,7 +273,8 @@ public:
 					people.setState(0);           // set the state to 0
 					return true;                  // return true
 				}
-		}for (int i = 0; i < (level >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) {
+		}
+		for (int i = 0; i < (mLevel >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) {
 			if (deer[i].getY() ==
 				people.getY() - 1) // if the deer is on the same line
 				if (abs(deer[i].getX() - people.getX()) < 3 ||
@@ -303,7 +304,7 @@ public:
 	void drawDie() {                      //	draw the ambulance
 		ambulance->setX(MAP_WIDTH);          // set the x position to the map width
 		ambulance->setY(people.getY() - 1); // set the y position to the people
-		for (int i = MAP_WIDTH; i > -16; --i) { // for each x position
+		for (int i = MAP_WIDTH; i > -ambulance->getLength(); --i) { // for each x position
 			ambulance->draw();                   // draw the ambulance
 			ambulance->move(-1, 0);              // move the ambulance
 			Sleep(10);                           // sleep for 10 ms
@@ -313,20 +314,20 @@ public:
 
 	void resetGame() { // reset the game
 		people.reset();           // reset the people
-		score = 0;                // set the score to t
-		count = 0;
-		level = 1;
+		mScore = 0;                // set the mScore to t
+		mCount = 0;
+		mLevel = 1;
 		randomPos();
 	}
 
 	void randomPos() {
-		if (level == 2) {
+		if (mLevel == 2) {
 			delete[] deer;
 			delete[] cow;
 			deer = new CDEER[MAX_OBJECT];
 			cow = new CCOW[MAX_OBJECT];
 		}
-		if (level == 3) {
+		if (mLevel == 3) {
 			delete[] truck;
 			delete[] car;
 			truck = new CTRUCK[MAX_OBJECT];
@@ -335,7 +336,7 @@ public:
 		srand((unsigned)time(0));                         // randomize the seed
 		random_shuffle(pos.begin(), pos.end()); // randomize the position
 
-		for (int i = 0; i < (level >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
+		for (int i = 0; i < (mLevel >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
 			int x = i * 30 + (rand() % (10));    // randomize the x position
 			srand((unsigned)time(0));                      // randomize the seed
 			truck[i].setX(10 * i + x +
@@ -346,7 +347,7 @@ public:
 			car[i].setX(5 * i + x + rand() % (5)); // set the x position of the car
 			car[i].setY(pos[1]);
 		}                     // set the y position of the car
-		for (int i = 0; i < (level >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
+		for (int i = 0; i < (mLevel >= 2 ? MAX_OBJECT : MIN_OBJECT); ++i) { // for each object
 			int x = i * 30 + (rand() % (10));    // randomize the x position
 			srand((unsigned)time(0));                          // randomize the seed
 			deer[i].setX(10 * i + x + rand() % (5)); // set the x position of the deer
@@ -358,7 +359,7 @@ public:
 		}
 	}
 
-	void drawContinue() { // draw the continue
+	void playAgainMsg() { // draw the continue
 		textColor(14);      // set the text color to yellow
 		gotoxy(1, 2);       // set the position
 		cout << R"(
@@ -377,16 +378,16 @@ public:
 	}
 
 	void saveGame() {
-		char fileName[9];
-		gotoxy(MAP_WIDTH + 13, MAP_HEIGHT / 2.2);
+		char temp[9];
+		gotoxy(MAP_WIDTH * 1.1 + 3, MAP_HEIGHT / 2.3);
 		textColor(224);
 		cout << " Enter file name:         ";
-		gotoxy(MAP_WIDTH + 31, MAP_HEIGHT/2.2);
+		gotoxy(MAP_WIDTH * 1.3 + 1, MAP_HEIGHT / 2.3);
 		textColor(224);
-		cin.getline(fileName, 8);
+		cin.getline(temp, 8);
 		textColor(7);
-		string temp = fileName;
-		ofstream ofs(temp + ".txt");
+		string fileName = temp;
+		ofstream ofs(fileName + ".txt");
 		ofs << people.getX() << " " << people.getY() << endl;
 		for (int i = 0; i < 3; i++) {
 			ofs << truck[i].getX() << " " << truck[i].getY() << endl;
@@ -394,64 +395,22 @@ public:
 			ofs << cow[i].getX() << " " << cow[i].getY() << endl;
 			ofs << deer[i].getX() << " " << deer[i].getY() << endl;
 		}
-		ofs << score << endl;
+		ofs << mScore << endl;
 		ofs << truckTraffic.getTime() << " " << truckTraffic.getState() << endl;
 		ofs << carTraffic.getTime() << " " << carTraffic.getState() << endl;
 	}
 
-	std::wstring ExePath() {
-		TCHAR buffer[MAX_PATH] = { 0 };
-		GetModuleFileName(NULL, buffer, MAX_PATH);
-		std::wstring::size_type pos = std::wstring(buffer).find_last_of(L"\\/");
-		return std::wstring(buffer).substr(0, pos);
-	}
-
-	void listTXT() {
-		vector<wstring> names;
-		wstring temp = ExePath();
-		while (temp.back() != '\\') {
-			temp.pop_back();
-		}
-		temp += L"\\DOANCUOIKY\\*.txt";
-		WIN32_FIND_DATA fd;
-		HANDLE hFind = ::FindFirstFile(temp.c_str(), &fd);
-		if (hFind != INVALID_HANDLE_VALUE) {
-			do {
-				// read all (real) files in current folder
-				// , delete '!' read other 2 default folder . and ..
-				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-					names.push_back(fd.cFileName);
-				}
-			} while (::FindNextFile(hFind, &fd));
-			::FindClose(hFind);
-		}
-		for (int i = 0; i < 10; i++) {
-			gotoxy(MAP_WIDTH / 1.5, 18 + i);
-			cout << i + 1 << ".              ";
-		}
-		for (auto i = 0; i < names.size(); i++) {
-			wstring a = names[i];
-			gotoxy(MAP_WIDTH / 1.5 + 3, 18 + i);
-			do {
-				a.pop_back();
-			} while (a.back() != '.');
-			a.pop_back();
-			wcout << a << endl;
-		}
-	}
-
 	void loadGame() {
-
 		listTXT();
-		string s;
+		string fileName;
 		textColor(224);
-		gotoxy(MAP_WIDTH / 1.5 + 1, 1);
+		gotoxy(MAP_WIDTH / 1.5 + 1, MAP_HEIGHT / 2);
 		cout << " Enter file name:          ";
-		gotoxy(MAP_WIDTH / 1.2 + 2, 1);
-		cin >> s;
+		gotoxy(MAP_WIDTH / 1.2 + 2, MAP_HEIGHT / 2);
+		cin >> fileName;
 		textColor(7);
-		s += ".txt";
-		ifstream ifs(s);
+		fileName += ".txt";
+		ifstream ifs(fileName);
 		if (ifs) {
 			int x, y;
 			ifs >> x >> y;
@@ -471,7 +430,7 @@ public:
 				deer[i].setX(x);
 				deer[i].setY(y);
 			}
-			ifs >> score;
+			ifs >> mScore;
 			ifs >> x >> y;
 			truckTraffic.setTime(x);
 			truckTraffic.setState(y);
@@ -481,19 +440,16 @@ public:
 		}
 	}
 
-	void musicOff(int i) {
-		if (i == 0)
-			PlaySound(NULL, 0, 0);
-		else if (i == 1)
-			PlaySound(TEXT("song.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-		else if (i == 2)
-			PlaySound(TEXT("song1.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-	}
-
 	void drawPause() {
-		gotoxy(120, 30);
-		textColor(224);
-		cout << " Pause ";
+		textColor(68);
+		gotoxy(MAP_WIDTH + 1, pos[0] - 1);
+		cout << "  ";
+		gotoxy(MAP_WIDTH + 1, pos[1] - 1);
+		cout << "  ";
+		gotoxy(MAP_WIDTH + 1, pos[2] - 1);
+		cout << "  ";
+		gotoxy(MAP_WIDTH + 1, pos[3] - 1);
+		cout << "  ";
 		textColor(7);
 	}
 };

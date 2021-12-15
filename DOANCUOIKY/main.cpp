@@ -2,34 +2,51 @@
 #include "cgame.h"
 #include <conio.h>
 #include <thread>
+#include <condition_variable>
+#include <mutex>
 
 CGAME cg;
 char MOVING;
 int speed = 50;
 bool IS_RUNNING = true;
+condition_variable cv;
 
+int gg = 0;
+
+int lo1g = 0;
 void SubThread() {
 	while (IS_RUNNING) {
 		if (!cg.getPeople().isDead()) {
+			if (gg == 1) {
+				mutex lock;
+				unique_lock<mutex> ulock(lock);
+				cv.wait(ulock);
+			}
 			cg.updatePosPeople(MOVING);
 			MOVING = ' ';
-			cg.printScore();
 			cg.updatePosVehicle();
 			cg.updatePosAnimal();
 			cg.drawGame();
 			cg.isImpact();
-			cg.reset();
 			cg.setSpeed(speed);
+			if (cg.getPeople().isFinish()) {
+				cg.clearScore();
+				cg.updateScore();
+				cg.updatePeoplePos();
+				cg.levelUp();
+			}
+			cg.drawScore();
 			if (cg.getPeople().isDead()) {
 				cg.drawDie();
-				cg.drawContinue();
+				cg.playAgainMsg();
+				lo1g = 1;
 			}
+
 		}
 	}
 }
 
-
-
+int gg2 = 0;
 auto l = [](thread& t1) {
 	while (true) {
 		char temp = toupper(_getch());
@@ -41,37 +58,52 @@ auto l = [](thread& t1) {
 				break;
 			}
 			else if (temp == 'P') {
-				cg.pauseGame(t1.native_handle());
+				gg = 1;
+				gg2 = 1;
+				Sleep(100);
+				cg.drawPause();
 			}
 			else if (temp == 'L') {
-				cg.pauseGame(t1.native_handle());
+				gg = 1;
+				Sleep(100);
 				cg.saveGame();
 				system("cls");
 				cg.drawMap();
-				cg.resumeGame(t1.native_handle());
+				cv.notify_all();
+				gg = 0;
 			}
 			else {
-				cg.resumeGame(t1.native_handle());
-				MOVING = temp; // Cập nhật bước di chuyển
+				if (gg2 == 1) {
+					system("cls");
+					cg.drawMap();
+					gg2 = 0;
+				}
+				if (gg == 1) {
+					cv.notify_all();
+					gg = 0;
+				}
+				MOVING = temp;
 			}
 		}
 		else {
-			if (temp == 'Y') {
-				system("cls");
-				cg.drawMap();
-				cg.resetGame();
-			}
-			else {
-				IS_RUNNING = false;
-				t1.join();
-				cg.resetGame();
-				break;
+			if (lo1g == 1) {
+				if (temp == 'Y') {
+					system("cls");
+					cg.drawMap();
+					cg.resetGame();
+				}
+				else {
+					IS_RUNNING = false;
+					t1.join();
+					cg.resetGame();
+					break;
+				}
+				lo1g = 0;
 			}
 
 		}
 	}
 };
-
 int main() {
 	ios_base::sync_with_stdio(false);
 	cin.tie(0);

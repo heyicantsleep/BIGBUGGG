@@ -1,7 +1,7 @@
 #ifndef _GRAFFIC_H_
 #define _GRAFFIC_H_
 #include <string>
-#include "console.h"
+#include "api.h"
 #include <iostream>
 using namespace std;
 
@@ -26,8 +26,22 @@ const string eight[] = { " $$$$$$ ", "$$    $$", "$$    $$", " $$$$$$ ",
 const string nine[] = { " $$$$$$ ", "$$    $$", "$$    $$", " $$$$$$$",
 					   "      $$", "$$    $$", " $$$$$$ " };
 
-void asci(int score) {
-	string a = to_string(score);
+const string gameTitle = { 
+R"( 
+               $$$$$$\                                          $$\                            $$$$$$\                                    
+              $$  __$$\                                         \__|                          $$  __$$\                                   
+              $$ /  \__| $$$$$$\   $$$$$$\   $$$$$$$\  $$$$$$$\ $$\ $$$$$$$\   $$$$$$\        $$ /  \__| $$$$$$\  $$$$$$\$$$$\   $$$$$$\  
+              $$ |      $$  __$$\ $$  __$$\ $$  _____|$$  _____|$$ |$$  __$$\ $$  __$$\       $$ |$$$$\  \____$$\ $$  _$$  _$$\ $$  __$$\ 
+              $$ |      $$ |  \__|$$ /  $$ |\$$$$$$\  \$$$$$$\  $$ |$$ |  $$ |$$ /  $$ |      $$ |\_$$ | $$$$$$$ |$$ / $$ / $$ |$$$$$$$$ |
+              $$ |  $$\ $$ |      $$ |  $$ | \____$$\  \____$$\ $$ |$$ |  $$ |$$ |  $$ |      $$ |  $$ |$$  __$$ |$$ | $$ | $$ |$$   ____|
+              \$$$$$$  |$$ |      \$$$$$$  |$$$$$$$  |$$$$$$$  |$$ |$$ |  $$ |\$$$$$$$ |      \$$$$$$  |\$$$$$$$ |$$ | $$ | $$ |\$$$$$$$\ 
+               \______/ \__|       \______/ \_______/ \_______/ \__|\__|  \__| \____$$ |       \______/  \_______|\__| \__| \__| \_______|
+                                                                              $$\   $$ |                                                  
+                                                                              \$$$$$$  |                                                  
+                                                                               \______/      )" };
+
+void asci(int mScore) {
+	string a = to_string(mScore);
 	int t = 0;
 	if (a.size() == 1) {
 		t = 22;
@@ -41,7 +55,7 @@ void asci(int score) {
 	else if (a.size() == 4) {
 		t = 7;
 	}
-	for (int i = 0; i < a.size(); i++) {
+	for (auto i = 0; i < a.size(); i++) {
 		switch (int(a[i]) - 48) {
 		case 0:
 			for (int j = 0; j < 7; j++) {
@@ -99,4 +113,10 @@ void asci(int score) {
 
 	}
 }
+
+void printGameTitle() {
+	gotoxy(0, CONSOLE_HEIGHT / 4 - 7);
+	cout << gameTitle;
+}
+
 #endif // !_GRAFFIC_H_

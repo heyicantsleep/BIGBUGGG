@@ -1,8 +1,8 @@
 #ifndef _CTRAFFIC_H_
 #define _CTRAFFIC_H_
 
-#include "console.h"
 #include <iostream>
+#include "api.h"
 
 using namespace std;
 
@@ -12,20 +12,20 @@ private:
 	bool mState;
 public:
 
-	CTRAFFIC(int time): mTime(time), mState(0)
+	CTRAFFIC(int time) : mTime(time), mState(0)
 	{
 	}
 
-	void setState(bool i) {
-		mState = i;
-	}
-
-	bool getState() {
-		return mState;
+	void setState(bool state) {
+		mState = state;
 	}
 
 	void setTime(int time) {
 		mTime = time;
+	}
+
+	inline bool getState() {
+		return mState;
 	}
 
 	inline int getTime() {
@@ -36,21 +36,19 @@ public:
 		return --mTime;
 	}
 
-	void drawRedLight(int index) {
-		gotoxy(101, index);
-		textColor(196);
+	void drawRedLight(int y) {
+		gotoxy(MAP_WIDTH + 1, y);
+		textColor(68);
 		cout << "  ";
 		textColor(7);
 	}
 
-	void drawGreenLight(int index) {
-		gotoxy(101, index);
+	void drawGreenLight(int y) {
+		gotoxy(MAP_WIDTH + 1, y);
 		textColor(34);
 		cout << "  ";
 		textColor(7);
 	}
 };
-
-	
 
 #endif

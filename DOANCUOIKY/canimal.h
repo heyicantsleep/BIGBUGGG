@@ -1,7 +1,7 @@
 #ifndef _CANIMAL_H_
 #define _CANIMAL_H_
 
-#include "console.h"
+#include "api.h"
 #include <iostream>
 #include <string>
 
@@ -29,7 +29,7 @@ private:
 
 public:
     void move(int dX, int dY)  { // move the deer
-        if (mX > -getLength() - 1)       // if the deer is on the map
+        if (mX >= -getLength())       // if the deer is on the map
             mX += dX;               // move the deer
         else                      // if the deer is off the map
             setX(MAP_WIDTH); // set the deer to the left of the map
@@ -55,7 +55,7 @@ public:
 
 class CCOW : public CANIMAL {
 private:
-    const string cow[4] = { R"(           (__))", R"(    ______/(oo))",
+    const string cow[4] = { R"(           (__))", R"(    ______/(oO))",
                            R"( *\(      /(__))", R"(   ||w----||   )" };
     const int cowLength = 14;
 
@@ -64,7 +64,7 @@ public:
         if (mX <= MAP_WIDTH) // if the cow is on the map
             mX += dX;                // move the cow
         else                       // if the cow is off the map
-            setX(-getLength() - 1);          // set the cow to the right of the map
+            setX(-getLength());          // set the cow to the right of the map
     }
 
     void draw() {                   // draw the cow
@@ -74,9 +74,8 @@ public:
             else                        // if the cow is off the map
                 gotoxy(1, mY + i);        // set the cursor to the left of the map
             for (int j = 0; j < getLength() + 1; ++j) // for each character
-                if (mX + j > 0 && mX + j < MAP_WIDTH) {  // if the cow is on the map
+                if (mX + j > 0 && mX + j < MAP_WIDTH)   // if the cow is on the map
                     cout << cow[i][j];                    // print the cow
-                }
         }
     }
 

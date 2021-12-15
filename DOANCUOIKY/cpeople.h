@@ -1,11 +1,9 @@
 ﻿#ifndef _CPEOPLE_H_
 #define _CPEOPLE_H_
 
-#include "cgame.h"
-#include "console.h"
-#include "cvehicle.h"
 #include <iostream>
 #include <string>
+#include "api.h"
 
 using namespace std;
 
@@ -43,7 +41,7 @@ public:
 
     void setY(int y) { mY = y; } // Set Y
 
-    void setState(bool i) { mState = i; } // Set state
+    void setState(bool state) { mState = state; } // Set state
 
     inline bool isFinish() { return mY == 3; } // If finish
 
