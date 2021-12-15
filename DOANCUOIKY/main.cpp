@@ -2,26 +2,20 @@
 #include "cgame.h"
 #include <conio.h>
 #include <thread>
-#include <condition_variable>
-#include <mutex>
 
 CGAME cg;
 char MOVING;
 int speed = 50;
 bool IS_RUNNING = true;
-condition_variable cv;
+bool IS_PAUSE = false;
+bool IS_DRAW_PAUSE = false;
+bool BLOCK_KEY = true;
 
-int gg = 0;
-
-int lo1g = 0;
 void SubThread() {
 	while (IS_RUNNING) {
 		if (!cg.getPeople().isDead()) {
-			if (gg == 1) {
-				mutex lock;
-				unique_lock<mutex> ulock(lock);
-				cv.wait(ulock);
-			}
+			if (IS_PAUSE)
+				cg.pauseGame();
 			cg.updatePosPeople(MOVING);
 			MOVING = ' ';
 			cg.updatePosVehicle();
@@ -39,15 +33,15 @@ void SubThread() {
 			if (cg.getPeople().isDead()) {
 				cg.drawDie();
 				cg.playAgainMsg();
-				lo1g = 1;
+				BLOCK_KEY = false;
 			}
 
 		}
 	}
 }
 
-int gg2 = 0;
-auto l = [](thread& t1) {
+
+void startGame(thread& t1) {
 	while (true) {
 		char temp = toupper(_getch());
 		if (!cg.getPeople().isDead()) {
@@ -58,39 +52,39 @@ auto l = [](thread& t1) {
 				break;
 			}
 			else if (temp == 'P') {
-				gg = 1;
-				gg2 = 1;
+				IS_PAUSE = true;
+				IS_DRAW_PAUSE = true;
 				Sleep(100);
 				cg.drawPause();
 			}
 			else if (temp == 'L') {
-				gg = 1;
+				IS_PAUSE = true;
 				Sleep(100);
 				cg.saveGame();
 				system("cls");
 				cg.drawMap();
-				cv.notify_all();
-				gg = 0;
+				cg.resumeGame();
+				IS_PAUSE = false;
 			}
 			else {
-				if (gg2 == 1) {
+				if (IS_DRAW_PAUSE) {
 					system("cls");
 					cg.drawMap();
-					gg2 = 0;
+					IS_DRAW_PAUSE = false;
 				}
-				if (gg == 1) {
-					cv.notify_all();
-					gg = 0;
+				if (IS_PAUSE) {
+					cg.resumeGame();
+					IS_PAUSE = false;
 				}
 				MOVING = temp;
 			}
 		}
 		else {
-			if (lo1g == 1) {
+			if (!BLOCK_KEY) {
 				if (temp == 'Y') {
 					cg.resetGame();
 					system("cls");
-					Sleep(10);
+					Sleep(20);
 					cg.drawMap();
 				}
 				else {
@@ -99,12 +93,12 @@ auto l = [](thread& t1) {
 					cg.resetGame();
 					break;
 				}
-				lo1g = 0;
+				BLOCK_KEY = true;
 			}
-
 		}
 	}
-};
+}
+
 int main() {
 	ios_base::sync_with_stdio(false);
 	cin.tie(0);
@@ -116,18 +110,17 @@ int main() {
 	const string menu[] = { "  New Game   ", "  Load Game  ", "  Settings   ",
 						   "  Exit       " };
 	const string songMenu[] = { "  Mute              ", "  Tornado Of Souls  ", "  You Say Run       ", "  Back              " };
-	int pos = 0;
-	int pos1 = 0;
-	int key2 = 0;
 	const int y = MAP_HEIGHT / 2;
 	const int x = MAP_WIDTH / 1.5 + 3;
-	while (1) {
+	int posMenu = 0;
+	int posSong = 0;
+	bool IS_EXIT = 0;
+	while (true) {
 		system("cls");
 		textColor(14);
 		drawGameTitle();
-
 		for (int i = 0; i < 4; ++i) {
-			if (i == pos) {
+			if (i == posMenu) {
 				textColor(224);
 				gotoxy(x, y + i);
 				cout << menu[i];
@@ -139,35 +132,31 @@ int main() {
 				cout << menu[i];
 			}
 		}
-		while (1) {
+		while (true) {
 			if (_kbhit()) {
-				char key = _getch();
-				if (key == 'W' || key == 'w') {
-					if (pos > 0) {
-						pos--;
-					}
-					else {
-						pos = 3;
-					}
+				char keyMenu = toupper(_getch());
+				if (keyMenu == 'W') {
+					if (posMenu > 0) 
+						--posMenu;
+					else 
+						posMenu = 3;
 					break;
 				}
-				if (key == 'S' || key == 's') {
-					if (pos < 3) {
-						pos++;
-					}
-					else {
-						pos = 0;
-					}
+				if (keyMenu == 'S') {
+					if (posMenu < 3) 
+						++posMenu;
+					else 
+						posMenu = 0;
 					break;
 				}
-				if (key == 13) {
-					switch (pos) {
+				if (keyMenu == 13) {
+					switch (posMenu) {
 					case 0: {
 						system("cls");
 						cg.drawMap();
 						IS_RUNNING = true;
 						thread t1(SubThread);
-						l(t1);
+						startGame(t1);
 						break;
 					}
 					case 1: {
@@ -176,48 +165,43 @@ int main() {
 						cg.drawMap();
 						IS_RUNNING = true;
 						thread t1(SubThread);
-						l(t1);
+						startGame(t1);
 						break;
 					}
 					case 2: {
-						while (1) {
-
-							for (int k = 0; k < 4; ++k) {
-								if (k == pos1) {
+						while (true) {
+							for (int j = 0; j < 4; ++j) {
+								if (j == posSong) {
 									textColor(224);
-									gotoxy(x - 3, y + k);
-									cout << songMenu[k];
+									gotoxy(x - 3, y + j);
+									cout << songMenu[j];
 									textColor(7);
 								}
 								else {
-									gotoxy(x - 3, y + k);
+									gotoxy(x - 3, y + j);
 									textColor(14);
-									cout << songMenu[k];
+									cout << songMenu[j];
 								}
 							}
-							while (1) {
+							while (true) {
 								if (_kbhit()) {
-									char key1 = _getch();
-									if (key1 == 'W' || key1 == 'w') {
-										if (pos1 > 0) {
-											pos1--;
-										}
-										else {
-											pos1 = 3;
-										}
+									char keySong = toupper(_getch());
+									if (keySong == 'W') {
+										if (posSong > 0) 
+											--posSong;
+										else 
+											posSong = 3;
 										break;
 									}
-									else if (key1 == 'S' || key1 == 's') {
-										if (pos1 < 3) {
-											pos1++;
-										}
-										else {
-											pos1 = 0;
-										}
+									else if (keySong == 'S') {
+										if (posSong < 3) 
+											posSong++;
+										else 
+											posSong = 0;
 										break;
 									}
-									if (key1 == 13) {
-										switch (pos1) {
+									if (keySong == 13) {
+										switch (posSong) {
 										case 0:
 											PlaySound(NULL, 0, 0);
 											break;
@@ -230,15 +214,15 @@ int main() {
 												SND_FILENAME | SND_ASYNC | SND_LOOP);
 											break;
 										case 3:
-											key2 = 1;
+											IS_EXIT = true;
 											break;
 										}
 									}
 									break;
 								}
 							}
-							if (key2 == 1) {
-								key2 = 0;
+							if (IS_EXIT) {
+								IS_EXIT = false;
 								break;
 							}
 						}

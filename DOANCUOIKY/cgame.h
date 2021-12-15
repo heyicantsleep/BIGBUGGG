@@ -7,14 +7,17 @@
 #include <iostream>
 #include <time.h>
 #include <vector>
+#include <condition_variable>
+#include <mutex>
 #include "cpeople.h"
 #include "canimal.h"
 #include "cvehicle.h"
 #include "ctraffic.h"
-#include "graffic.h"
+#include "cgraffic.h"
 
 const int MIN_OBJECT = 2;
 const int MAX_OBJECT = 3;
+condition_variable cv;
 
 using namespace std;
 
@@ -71,10 +74,19 @@ public:
 		delete[] cow;
 	}
 
+	void pauseGame() {
+		mutex lock;
+		unique_lock<mutex> ulock(lock);
+		cv.wait(ulock);
+	}
+
+	void resumeGame() {
+		cv.notify_all();
+	}
 
 	void setSpeed(int speed) {          // speed up the game
-		if (getScore() * 5 < speed - 10)      // if the mScore is less than the speed
-			Sleep(speed - getScore() * 5); // sleep for the difference
+		if (mCount*4 < speed - 15)      // if the mScore is less than the speed
+			Sleep(speed - mCount*4); // sleep for the difference
 		else                             // else
 			Sleep(15);                      // sleep for 15 ms
 	}
@@ -115,16 +127,12 @@ public:
 	}
 
 	void levelUp() {
-		if ((mCount / 5) == mLevel) {
+		if ((mCount / 3) == mLevel) {
 			mLevel++;
 			randomPos();
 			system("cls");
 			drawMap();
 		};
-	}
-
-	inline int getScore() {
-		return mScore;
 	}
 
 	void drawScore() {
@@ -362,9 +370,9 @@ public:
 
 	void saveGame() {
 		char temp[9];
-		gotoxy(MAP_WIDTH * 1.1 + 3, MAP_HEIGHT / 2.3);
+		gotoxy(MAP_WIDTH * 1.1 + 2, MAP_HEIGHT / 2.3);
 		textColor(224);
-		cout << " Enter file name:         ";
+		cout << "  Enter file name:          ";
 		gotoxy(MAP_WIDTH * 1.3 + 1, MAP_HEIGHT / 2.3);
 		textColor(224);
 		cin.getline(temp, 8);
@@ -425,6 +433,8 @@ public:
 
 	void drawPause() {
 		textColor(68);
+		gotoxy(MAP_WIDTH + 1, 1);
+		cout << "  ";
 		gotoxy(MAP_WIDTH + 1, pos[0] - 1);
 		cout << "  ";
 		gotoxy(MAP_WIDTH + 1, pos[1] - 1);
@@ -432,6 +442,8 @@ public:
 		gotoxy(MAP_WIDTH + 1, pos[2] - 1);
 		cout << "  ";
 		gotoxy(MAP_WIDTH + 1, pos[3] - 1);
+		cout << "  ";
+		gotoxy(MAP_WIDTH + 1, 31);
 		cout << "  ";
 		textColor(7);
 	}
