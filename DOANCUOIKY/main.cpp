@@ -112,31 +112,20 @@ int main() {
 	resizeConsole(1120, 630);
 	hideCursor();
 	PlaySound(TEXT("song1.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-	const string menu[] = { " New Game  ", " Load Game ", " Settings  ",
-						   " Exit      " };
-	const string songMenu[] = { " Mute             ", " Tornado Of Souls ", " You Say Run      ", " Back             " };
+	const string menu[] = { "  New Game   ", "  Load Game  ", "  Settings   ",
+						   "  Exit       " };
+	const string songMenu[] = { "  Mute              ", "  Tornado Of Souls  ", "  You Say Run       ", "  Back              " };
 	int pos = 0;
 	int pos1 = 0;
 	int key2 = 0;
 	const int y = MAP_HEIGHT / 2;
-	const int x = MAP_WIDTH / 1.5 + 5;
+	const int x = MAP_WIDTH / 1.5 + 3;
 	while (1) {
 		system("cls");
 		textColor(14);
-		gotoxy(1, 2);
-		cout << R"(
-            $$$$$$\                                          $$\                            $$$$$$\                                    
-           $$  __$$\                                         \__|                          $$  __$$\                                   
-           $$ /  \__| $$$$$$\   $$$$$$\   $$$$$$$\  $$$$$$$\ $$\ $$$$$$$\   $$$$$$\        $$ /  \__| $$$$$$\  $$$$$$\$$$$\   $$$$$$\  
-           $$ |      $$  __$$\ $$  __$$\ $$  _____|$$  _____|$$ |$$  __$$\ $$  __$$\       $$ |$$$$\  \____$$\ $$  _$$  _$$\ $$  __$$\ 
-           $$ |      $$ |  \__|$$ /  $$ |\$$$$$$\  \$$$$$$\  $$ |$$ |  $$ |$$ /  $$ |      $$ |\_$$ | $$$$$$$ |$$ / $$ / $$ |$$$$$$$$ |
-           $$ |  $$\ $$ |      $$ |  $$ | \____$$\  \____$$\ $$ |$$ |  $$ |$$ |  $$ |      $$ |  $$ |$$  __$$ |$$ | $$ | $$ |$$   ____|
-           \$$$$$$  |$$ |      \$$$$$$  |$$$$$$$  |$$$$$$$  |$$ |$$ |  $$ |\$$$$$$$ |      \$$$$$$  |\$$$$$$$ |$$ | $$ | $$ |\$$$$$$$\ 
-            \______/ \__|       \______/ \_______/ \_______/ \__|\__|  \__| \____$$ |       \______/  \_______|\__| \__| \__| \_______|
-                                                                           $$\   $$ |                                                  
-                                                                           \$$$$$$  |                                                  
-                                                                            \______/                                                   )";
-
+		printGameTitle();
+		gotoxy(150 / 2, 22);
+		cout << "|";
 		for (int i = 0; i < 4; ++i) {
 			if (i == pos) {
 				textColor(224);
@@ -196,12 +185,12 @@ int main() {
 							for (int k = 0; k < 4; ++k) {
 								if (k == pos1) {
 									textColor(224);
-									gotoxy(x, y + k);
+									gotoxy(x - 3, y + k);
 									cout << songMenu[k];
 									textColor(7);
 								}
 								else {
-									gotoxy(x, y + k);
+									gotoxy(x - 3, y + k);
 									textColor(14);
 									cout << songMenu[k];
 								}
