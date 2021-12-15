@@ -40,6 +40,33 @@ R"(
                                                                               \$$$$$$  |                                                  
                                                                                \______/      )" };
 
+const string keyGuide = { 
+R"(							
+														           ______ 
+														          ||W   || 
+														          ||____|| Up
+														    ______|/____\|______
+														   ||A   |||S   |||D   ||
+														   ||____|||____|||____||
+														   |/____\|/____\|/____\|
+														     Left   Down   Right
+														    ______ ______ ______
+														   ||Esc |||L   |||P   ||
+														   ||____|||____|||____||
+														   |/____\|/____\|/____\|
+														     Exit   Save   Pause)" };
+
+const string gameOver = {
+R"(
+			       $$$$$$\                                           $$$$$$\                                 
+			      $$  __$$\                                         $$  __$$\                                
+			      $$ /  \__| $$$$$$\  $$$$$$\$$$$\   $$$$$$\        $$ /  $$ |$$\    $$\  $$$$$$\   $$$$$$\  
+			      $$ |$$$$\  \____$$\ $$  _$$  _$$\ $$  __$$\       $$ |  $$ |\$$\  $$  |$$  __$$\ $$  __$$\ 
+			      $$ |\_$$ | $$$$$$$ |$$ / $$ / $$ |$$$$$$$$ |      $$ |  $$ | \$$\$$  / $$$$$$$$ |$$ |  \__|
+			      $$ |  $$ |$$  __$$ |$$ | $$ | $$ |$$   ____|      $$ |  $$ |  \$$$  /  $$   ____|$$ |      
+			      \$$$$$$  |\$$$$$$$ |$$ | $$ | $$ |\$$$$$$$\        $$$$$$  |   \$  /   \$$$$$$$\ $$ |      
+			       \______/  \_______|\__| \__| \__| \_______|       \______/     \_/     \_______|\__|      )" };
+
 void asci(int mScore) {
 	string a = to_string(mScore);
 	int t = 0;
@@ -59,52 +86,52 @@ void asci(int mScore) {
 		switch (int(a[i]) - 48) {
 		case 0:
 			for (int j = 0; j < 7; j++) {
-				gotoxy( i * 9 + i + MAP_WIDTH + t, 5 + j); cout << zero[j];
+				gotoxy( i * 9 + i + MAP_WIDTH + t, 6 + j); cout << zero[j];
 			}
 			break;
 		case 1:
 			for (int j = 0; j < 7; j++) {
-				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 5 + j); cout << one[j];
+				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 6 + j); cout << one[j];
 			}
 			break;
 		case 2:
 			for (int j = 0; j < 7; j++) {
-				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 5 + j); cout << two[j];
+				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 6 + j); cout << two[j];
 			}
 			break;
 		case 3:
 			for (int j = 0; j < 7; j++) {
-				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 5 + j); cout << three[j];
+				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 6 + j); cout << three[j];
 			}
 			break;
 		case 4:
 			for (int j = 0; j < 7; j++) {
-				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 5 + j); cout << four[j];
+				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 6 + j); cout << four[j];
 			}
 			break;
 		case 5:
 			for (int j = 0; j < 7; j++) {
-				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 5 + j); cout << five[j];
+				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 6 + j); cout << five[j];
 			}
 			break;
 		case 6:
 			for (int j = 0; j < 7; j++) {
-				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 5 + j); cout << six[j];
+				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 6 + j); cout << six[j];
 			}
 			break;
 		case 7:
 			for (int j = 0; j < 7; j++) {
-				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 5 + j); cout << seven[j];
+				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 6 + j); cout << seven[j];
 			}
 			break;
 		case 8:
 			for (int j = 0; j < 7; j++) {
-				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 5 + j); cout << eight[j];
+				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 6 + j); cout << eight[j];
 			}
 			break;
 		case 9:
 			for (int j = 0; j < 7; j++) {
-				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 5 + j); cout << nine[j];
+				gotoxy(  i * 9 + i + MAP_WIDTH + t  , 6 + j); cout << nine[j];
 			}
 			break;
 		default:
@@ -114,9 +141,19 @@ void asci(int mScore) {
 	}
 }
 
-void printGameTitle() {
-	gotoxy(0, CONSOLE_HEIGHT / 4 - 7);
+void drawGameTitle() {
+	gotoxy(0, MAP_HEIGHT / 4 - 7);
 	cout << gameTitle;
+}
+
+void drawKeyGuide() {
+	gotoxy(0, MAP_HEIGHT / 2 - 1);
+	cout << keyGuide;
+}
+
+void drawGameOver(){
+	gotoxy(0, MAP_HEIGHT/4 + 1);
+	cout << gameOver;
 }
 
 #endif // !_GRAFFIC_H_

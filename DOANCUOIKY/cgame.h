@@ -81,24 +81,10 @@ public:
 
 
 	void drawMap() { // draw the map
+		textColor(8); // set the color to yellow
+		drawKeyGuide();
 		textColor(14); // set the color to yellow
-		gotoxy(1, MAP_HEIGHT / 2); // set the position
-		cout
-			<< R"(							
-														           ______ 
-														          ||W   || 
-														          ||____|| Up
-														    ______|/____\|______
-														   ||A   |||S   |||D   ||
-														   ||____|||____|||____||
-														   |/____\|/____\|/____\|
-														     Left   Down   Right
-														    ______ ______ ______
-														   ||Esc |||L   |||P   ||
-														   ||____|||____|||____||
-														   |/____\|/____\|/____\|
-														     Exit   Save   Pause
-)";
+
 		for (int i = 0; i < MAP_HEIGHT; ++i) { // draw the map
 			gotoxy(0, i);                       // set the position
 			cout << char(186);          // draw the map
@@ -148,7 +134,7 @@ public:
 
 	void clearScore() {
 		for (int i = 0; i < 7; i++) {
-			gotoxy(MAP_WIDTH + 7, 5 + i);
+			gotoxy(MAP_WIDTH + 7, 6 + i);
 			cout
 				<< R"(                            )";
 		}
@@ -211,7 +197,10 @@ public:
 
 	void updatePosVehicle() { // update the position of the vehicle
 		if (truckTraffic.getState() == false) {           // if the truck moving
-			truckTraffic.drawGreenLight(truck->getY() - 1); // draw the green light
+			if (truckTraffic.getTime() > 30)
+				truckTraffic.drawGreenLight(truck->getY() - 1); // draw the green light
+			else
+				truckTraffic.drawYellowLight(truck->getY() - 1);
 			for (int i = 0; i < (mLevel >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i)            // for each object
 				truck[i].move(-1, 0);                         // move the truck
 			if (truckTraffic.updateTime() < 0) {            // if the time is up
@@ -228,7 +217,10 @@ public:
 		}
 
 		if (carTraffic.getState() == false) {         // if the car moving
-			carTraffic.drawGreenLight(car->getY() - 1); // draw the green light
+			if (carTraffic.getTime() > 30)
+				carTraffic.drawGreenLight(car->getY() - 1); // draw the green light
+			else
+				carTraffic.drawYellowLight(car->getY() - 1);
 			for (int i = 0; i < (mLevel >= 3 ? MAX_OBJECT : MIN_OBJECT); ++i)        // for each object
 				car[i].move(1, 0);                       // move the car
 			if (carTraffic.updateTime() < 0) {          // if the time is up
@@ -361,18 +353,9 @@ public:
 
 	void playAgainMsg() { // draw the continue
 		textColor(14);      // set the text color to yellow
-		gotoxy(1, 2);       // set the position
-		cout << R"(
-				 $$$$$$\                                           $$$$$$\                                 
-				$$  __$$\                                         $$  __$$\                                
-				$$ /  \__| $$$$$$\  $$$$$$\$$$$\   $$$$$$\        $$ /  $$ |$$\    $$\  $$$$$$\   $$$$$$\  
-				$$ |$$$$\  \____$$\ $$  _$$  _$$\ $$  __$$\       $$ |  $$ |\$$\  $$  |$$  __$$\ $$  __$$\ 
-				$$ |\_$$ | $$$$$$$ |$$ / $$ / $$ |$$$$$$$$ |      $$ |  $$ | \$$\$$  / $$$$$$$$ |$$ |  \__|
-				$$ |  $$ |$$  __$$ |$$ | $$ | $$ |$$   ____|      $$ |  $$ |  \$$$  /  $$   ____|$$ |      
-				\$$$$$$  |\$$$$$$$ |$$ | $$ | $$ |\$$$$$$$\        $$$$$$  |   \$  /   \$$$$$$$\ $$ |      
-				 \______/  \_______|\__| \__| \__| \_______|       \______/     \_/     \_______|\__|      
-)";
-		gotoxy(MAP_WIDTH / 1.5 + 3, MAP_HEIGHT / 2 - 1); // set the position
+		drawGameOver();
+		gotoxy(MAP_WIDTH / 1.5, MAP_HEIGHT / 2 + 3); // set the position
+		textColor(8);      // set the text color to yellow
 		cout << " Play again?(y/N) ";                  // print the message
 		textColor(7); // set the text color to white
 	}
@@ -404,9 +387,9 @@ public:
 		listTXT();
 		string fileName;
 		textColor(224);
-		gotoxy(MAP_WIDTH / 1.5 + 1, MAP_HEIGHT / 2);
-		cout << " Enter file name:          ";
-		gotoxy(MAP_WIDTH / 1.2 + 2, MAP_HEIGHT / 2);
+		gotoxy(MAP_WIDTH / 1.6 - 1, MAP_HEIGHT / 2);
+		cout << "  Enter file name:           ";
+		gotoxy(MAP_WIDTH / 1.3 + 4, MAP_HEIGHT / 2);
 		cin >> fileName;
 		textColor(7);
 		fileName += ".txt";

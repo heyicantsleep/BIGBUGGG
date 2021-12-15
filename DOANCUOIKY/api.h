@@ -75,17 +75,26 @@ void listTXT() {
 		::FindClose(hFind);
 	}
 	for (int i = 0; i < 10; i++) {
-		gotoxy(MAP_WIDTH / 1.5, MAP_HEIGHT / 2 + 1 + i);
-		cout << i + 1 << ".              ";
+		gotoxy(MAP_WIDTH / 1.6 - 1, MAP_HEIGHT / 2 + 1 + i);
+		cout << i + 1 << ".                           ";
 	}
+	int n = names.size();
 	for (auto i = 0; i < names.size(); i++) {
 		wstring a = names[i];
-		gotoxy(MAP_WIDTH / 1.5 + 3, MAP_HEIGHT / 2 + 1 + i);
+		gotoxy(MAP_WIDTH / 1.6 + 3, MAP_HEIGHT / 2 + 1 + i);
 		do {
 			a.pop_back();
 		} while (a.back() != '.');
 		a.pop_back();
 		wcout << a << endl;
+	}
+	if (n < 10) {
+		for (int i = 9; i >= n; --i) {
+			textColor(8);
+			gotoxy(MAP_WIDTH / 1.6 + 3, MAP_HEIGHT / 2 + 1 + i);
+			cout << "EMPTY";
+		}
+		textColor(14);
 	}
 }
 #endif

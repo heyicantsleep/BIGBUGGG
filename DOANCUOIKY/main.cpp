@@ -88,9 +88,10 @@ auto l = [](thread& t1) {
 		else {
 			if (lo1g == 1) {
 				if (temp == 'Y') {
-					system("cls");
-					cg.drawMap();
 					cg.resetGame();
+					system("cls");
+					Sleep(10);
+					cg.drawMap();
 				}
 				else {
 					IS_RUNNING = false;
@@ -123,9 +124,8 @@ int main() {
 	while (1) {
 		system("cls");
 		textColor(14);
-		printGameTitle();
-		gotoxy(150 / 2, 22);
-		cout << "|";
+		drawGameTitle();
+
 		for (int i = 0; i < 4; ++i) {
 			if (i == pos) {
 				textColor(224);
@@ -147,12 +147,12 @@ int main() {
 						pos--;
 					}
 					else {
-						pos = 4 - 1;
+						pos = 3;
 					}
 					break;
 				}
 				if (key == 'S' || key == 's') {
-					if (pos < 4 - 1) {
+					if (pos < 3) {
 						pos++;
 					}
 					else {
@@ -203,12 +203,12 @@ int main() {
 											pos1--;
 										}
 										else {
-											pos1 = 4 - 1;
+											pos1 = 3;
 										}
 										break;
 									}
 									else if (key1 == 'S' || key1 == 's') {
-										if (pos1 < 4 - 1) {
+										if (pos1 < 3) {
 											pos1++;
 										}
 										else {

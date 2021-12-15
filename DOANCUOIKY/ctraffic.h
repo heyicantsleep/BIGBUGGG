@@ -49,6 +49,13 @@ public:
 		cout << "  ";
 		textColor(7);
 	}
+
+	void drawYellowLight(int y) {
+		gotoxy(MAP_WIDTH + 1, y);
+		textColor(102);
+		cout << "  ";
+		textColor(7);
+	}
 };
 
 #endif
