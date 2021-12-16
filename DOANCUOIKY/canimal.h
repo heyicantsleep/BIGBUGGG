@@ -24,18 +24,18 @@ public:
 class CDEER : public CANIMAL {
 private:
     const string deer[4] = { R"(//_\\   )", R"(."\__   )", R"( \ __ \ )",
-                            R"(  || || )" };
+                             R"(  || || )" };
     const int deerLength = 7; // length of the deer
 
 public:
-    void move(int dX, int dY)  { // move the deer
+    void move(int dX, int dY) override { // move the deer
         if (mX >= -getLength())       // if the deer is on the map
             mX += dX;               // move the deer
         else                      // if the deer is off the map
             setX(MAP_WIDTH); // set the deer to the left of the map
     }
 
-    void draw()  {                   // draw the deer
+    void draw() override {                   // draw the deer
         for (int i = 0; i < 4; ++i) { // for each line
             if (mX > 1)                 // if the deer is on the map
                 gotoxy(mX, mY + i);       // set the cursor to the deer
@@ -48,7 +48,7 @@ public:
         }
     }
 
-    inline int getLength() const {
+    inline int getLength() const override {
         return deerLength;
     } // get the length of the deer
 };
@@ -56,18 +56,18 @@ public:
 class CCOW : public CANIMAL {
 private:
     const string cow[4] = { R"(           (__))", R"(    ______/(oO))",
-                           R"( *\(      /(__))", R"(   ||w----||   )" };
+                            R"( *\(      /(__))", R"(   ||w----||   )" };
     const int cowLength = 14;
 
 public:
-    void move(int dX, int dY) {  // move the cow
+    void move(int dX, int dY) override {  // move the cow
         if (mX <= MAP_WIDTH) // if the cow is on the map
             mX += dX;                // move the cow
         else                       // if the cow is off the map
             setX(-getLength());          // set the cow to the right of the map
     }
 
-    void draw() {                   // draw the cow
+    void draw() override {                   // draw the cow
         for (int i = 0; i < 4; ++i) { // for each line
             if (mX > 1)                 // if the cow is on the map
                 gotoxy(mX, mY + i);       // set the cursor to the cow
@@ -79,7 +79,7 @@ public:
         }
     }
 
-    inline int getLength() const {
+    inline int getLength() const override {
         return cowLength;
     } // get the length of the cow
 };

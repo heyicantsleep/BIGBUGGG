@@ -43,13 +43,13 @@ public:
 
     void setState(bool state) { mState = state; } // Set state
 
-    inline bool isFinish() { return mY == 3; } // If finish
+    inline bool isFinish() const { return mY == 3; } // If finish
 
-    inline bool isDead() { return !mState; } // If dead
+    inline bool isDead() const { return !mState; } // If dead
 
-    inline int getX() { return mX; } // Get X
+    inline int getX() const { return mX; } // Get X
 
-    inline int getY() { return mY; } // Get Y
+    inline int getY() const { return mY; } // Get Y
 
     void draw() {                   // Draw people
         textColor(6);                 // Set color
@@ -60,7 +60,7 @@ public:
         textColor(7); // Set color
     }
 
-    void clear() {                  // Clear people
+    void clear() const {                  // Clear people
         for (int i = 0; i < 3; ++i) { // For each line
             gotoxy(mX, mY + i);         // Set position
             cout << "   ";              // Print empty
