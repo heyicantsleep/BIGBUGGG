@@ -40,21 +40,21 @@ public:
 		gotoxy(MAP_WIDTH + 1, y);
 		textColor(68);
 		cout << "  ";
-		textColor(7);
+		textColor(15);
 	}
 
 	void drawGreenLight(int y) {
 		gotoxy(MAP_WIDTH + 1, y);
 		textColor(34);
 		cout << "  ";
-		textColor(7);
+		textColor(15);
 	}
 
 	void drawYellowLight(int y) {
 		gotoxy(MAP_WIDTH + 1, y);
 		textColor(102);
 		cout << "  ";
-		textColor(7);
+		textColor(15);
 	}
 };
 

@@ -59,6 +59,17 @@ void startGame(thread& t1) {
                 CGAME::resumeGame();
                 IS_PAUSE = false;
             }
+            else if (temp == 'T') {
+                IS_PAUSE = true;
+                Sleep(100);
+                system("cls");
+                drawGameTitle();
+                cg->loadGame();
+                system("cls");
+                CGAME::drawMap();
+                CGAME::resumeGame();
+                IS_PAUSE = false;
+            }
             else {
                 if (IS_PAUSE) {
                     system("cls");
@@ -109,12 +120,15 @@ int main() {
         system("cls");
         textColor(14);
         drawGameTitle();
+        textColor(6);
+        gotoxy(CONSOLE_WIDTH / 2 - 4, MAP_HEIGHT / 2 - 2);
+        cout << "MAIN MENU";
         for (int i = 0; i < 4; ++i) {
             if (i == posMenu) {
                 textColor(224);
                 gotoxy(x, y + i);
                 cout << menu[i];
-                textColor(7);
+                textColor(15);
             }
             else {
                 gotoxy(x, y + i);
@@ -157,17 +171,20 @@ int main() {
                             thread t1(SubThread);
                             startGame(t1);
                         }
-                        textColor(7);
+                        textColor(15);
                         break;
                     }
                     case 2: {
                         while (true) {
+                            textColor(6);
+                            gotoxy(CONSOLE_WIDTH / 2 - 7, MAP_HEIGHT / 2 - 2);
+                            cout << "AUDIO SETTINGS";
                             for (int j = 0; j < 4; ++j) {
                                 if (j == posSong) {
                                     textColor(224);
                                     gotoxy(x - 3, y + j);
                                     cout << songMenu[j];
-                                    textColor(7);
+                                    textColor(15);
                                 }
                                 else {
                                     gotoxy(x - 3, y + j);

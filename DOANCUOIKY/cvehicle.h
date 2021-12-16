@@ -111,7 +111,7 @@ public:
                         // 8th character
                         textColor(68);       // set the text color to red
                         cout << ambulance[i][j]; // print the character
-                        textColor(7);            // set the text color to white
+                        textColor(15);            // set the text color to white
                     }
                     else // if the character is not the first line or the 8th
                         // character

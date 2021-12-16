@@ -57,7 +57,7 @@ public:
             gotoxy(mX, mY + i);         // Set position
             cout << people[i];          // Print people
         }
-        textColor(7); // Set color
+        textColor(15); // Set color
     }
 
     void clear() const {                  // Clear people

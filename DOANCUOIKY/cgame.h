@@ -105,7 +105,7 @@ public:
 
 
     static void drawMap() { // draw the map
-        textColor(8); // set the color to yellow
+        textColor(7); // set the color to yellow
         drawKeyGuide();
         textColor(14); // set the color to yellow
 
@@ -150,6 +150,7 @@ public:
     void drawScore() const {
         textColor(11);
         asci(mScore * 10);
+        textColor(14);
     }
 
     static void clearScore() {
@@ -369,26 +370,30 @@ public:
     static void playAgainMsg() { // draw the continue
         textColor(14);      // set the text color to yellow
         drawGameOver();
-        gotoxy(CONSOLE_WIDTH / 2 - 9, MAP_HEIGHT / 2 + 3); // set the position
+        gotoxy(CONSOLE_WIDTH / 2 - 9, MAP_HEIGHT / 2 + 2); // set the position
         textColor(8);      // set the text color to yellow
         cout << " Play again?(y/N) ";                  // print the message
-        textColor(7); // set the text color to white
+        textColor(15); // set the text color to white
     }
 
     void saveGame() {
+        system("cls");
+        drawGameTitle();
         string fileName;
-        gotoxy(MAP_WIDTH + 12, MAP_HEIGHT / 2 - 3);
+        textColor(6);
+        gotoxy(CONSOLE_WIDTH / 2 - 4, MAP_HEIGHT / 2 - 2);
+        cout << "SAVE GAME";
+        gotoxy(CONSOLE_WIDTH / 2 - 13, MAP_HEIGHT / 2);
         textColor(224);
         cout << "  Enter file name:          ";
-        gotoxy(MAP_WIDTH + 31, MAP_HEIGHT / 2 - 3);
         int index = 0;
         textColor(224);
         while (true) {
             if (_kbhit()) {
-                gotoxy(MAP_WIDTH + 31 + index, MAP_HEIGHT / 2 - 3);
+                gotoxy(CONSOLE_WIDTH / 2 + 6 + index, MAP_HEIGHT / 2);
                 char ch = _getch();
                 if (ch == 27) {
-                    textColor(7);
+                    textColor(15);
                     return;
                 }
                 else if (ch == 13)
@@ -396,21 +401,21 @@ public:
                 else if (ch == 8) {
                     if (index > 0) {
                         --index;
-                        gotoxy(MAP_WIDTH + 31 + index, MAP_HEIGHT / 2 - 3);
+                        gotoxy(CONSOLE_WIDTH / 2 + 6 + index, MAP_HEIGHT / 2);
                         cout << " ";
                         if (!fileName.empty())
                             fileName.pop_back();
                     }
                 }
                 else {
-                    gotoxy(MAP_WIDTH + 31 + index, MAP_HEIGHT / 2 - 3);
+                    gotoxy(CONSOLE_WIDTH / 2 + 6 + index, MAP_HEIGHT / 2);
                     ++index;
                     cout << ch;
                     fileName.push_back(ch);
                 }
             }
         }
-        textColor(7);
+        textColor(15);
         ofstream ofs(fileName + ".txt");
         ofs << people.getX() << " " << people.getY() << endl;
         ofs << mScore << endl;
@@ -431,6 +436,9 @@ public:
     bool loadGame() {
         listTXT();
         string fileName;
+        textColor(6);
+        gotoxy(CONSOLE_WIDTH / 2 - 4, MAP_HEIGHT / 2 - 2);
+        cout << "LOAD GAME";
         textColor(224);
         gotoxy(CONSOLE_WIDTH / 2 - 13, MAP_HEIGHT / 2);
         cout << "  Enter file name:           ";
@@ -440,7 +448,10 @@ public:
                 gotoxy(CONSOLE_WIDTH / 2 + 6 + index, MAP_HEIGHT / 2);
                 char ch = _getch();
                 if (ch == 27)
+                {
+                    textColor(15);
                     return false;
+                }
                 else if (ch == 13)
                     break;
                 else if (ch == 8) {
@@ -460,7 +471,7 @@ public:
                 }
             }
         }
-        textColor(7);
+        textColor(15);
         fileName += ".txt";
         ifstream ifs(fileName);
         if (ifs) {
@@ -506,20 +517,15 @@ public:
     }
 
     static void drawPause() {
-        textColor(68);
-        gotoxy(MAP_WIDTH + 1, 1);
-        cout << "  ";
-        gotoxy(MAP_WIDTH + 1, pos[0] - 1);
-        cout << "  ";
-        gotoxy(MAP_WIDTH + 1, pos[1] - 1);
-        cout << "  ";
-        gotoxy(MAP_WIDTH + 1, pos[2] - 1);
-        cout << "  ";
-        gotoxy(MAP_WIDTH + 1, pos[3] - 1);
-        cout << "  ";
-        gotoxy(MAP_WIDTH + 1, 31);
-        cout << "  ";
-        textColor(7);
+        system("cls");
+        drawGameTitle();
+        textColor(6);
+        gotoxy(73, CONSOLE_HEIGHT / 2);
+        cout << "PAUSE";
+        textColor(8);
+        gotoxy(62, CONSOLE_HEIGHT / 2 + 1);
+        cout << "(Press any key to continue)";
+        textColor(14);
     }
 };
 

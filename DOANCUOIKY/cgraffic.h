@@ -42,19 +42,16 @@ R"(
 
 const string keyGuide = { 
 R"(							
-														           ______ 
-														          ||W   || 
-														          ||____|| Up
-														    ______|/____\|______
-														   ||A   |||S   |||D   ||
-														   ||____|||____|||____||
-														   |/____\|/____\|/____\|
-														     Left   Down   Right
-														    ______ ______ ______
-														   ||Esc |||L   |||P   ||
-														   ||____|||____|||____||
-														   |/____\|/____\|/____\|
-														     Exit   Save   Pause)" };
+														 ______ ______ ______ ______
+														||W   |||A   |||S   |||D   ||
+														||____|||____|||____|||____||
+														|/____\|/____\|/____\|/____\|
+														   Up    Left   Down   Right 
+														 ______ ______ ______ ______
+														||Esc |||T   |||L   |||P   ||
+														||____|||____|||____|||____||
+														|/____\|/____\|/____\|/____\|
+														  Exit   Load   Save   Pause)" };
 
 const string gameOver = {
 R"(
@@ -147,12 +144,12 @@ void drawGameTitle() {
 }
 
 void drawKeyGuide() {
-	gotoxy(0, MAP_HEIGHT / 2 - 1);
+	gotoxy(0, MAP_HEIGHT / 2 + 1);
 	cout << keyGuide;
 }
 
 void drawGameOver(){
-	gotoxy(0, MAP_HEIGHT/4 + 1);
+	gotoxy(0, MAP_HEIGHT/4);
 	cout << gameOver;
 }
 
