@@ -75,13 +75,13 @@ void listTXT() {
 		::FindClose(hFind);
 	}
 	for (int i = 0; i < 10; i++) {
-		gotoxy(CONSOLE_WIDTH / 2 - 14, MAP_HEIGHT / 2 + 1 + i);
+		gotoxy(CONSOLE_WIDTH / 2 - 13, MAP_HEIGHT / 2 + 1 + i);
 		cout << i + 1 << ".                           ";
 	}
 	int n = names.size();
 	for (auto i = 0; i < names.size(); i++) {
 		wstring fileName = names[i];
-		gotoxy(CONSOLE_WIDTH / 2 - 10, MAP_HEIGHT / 2 + 1 + i);
+		gotoxy(CONSOLE_WIDTH / 2 - 9, MAP_HEIGHT / 2 + 1 + i);
 		do {
 			fileName.pop_back();
 		} while (fileName.back() != '.');
@@ -91,7 +91,7 @@ void listTXT() {
 	if (n < 10) {
 		for (int i = 9; i >= n; --i) {
 			textColor(8);
-			gotoxy(CONSOLE_WIDTH / 2 - 10, MAP_HEIGHT / 2 + 1 + i);
+			gotoxy(CONSOLE_WIDTH / 2 - 9, MAP_HEIGHT / 2 + 1 + i);
 			cout << "EMPTY";
 		}
 		textColor(14);
