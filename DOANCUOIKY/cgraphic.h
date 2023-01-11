@@ -1,5 +1,5 @@
-#ifndef _CGRAFFIC_H_
-#define _CGRAFFIC_H_
+#ifndef _CGRAPHIC_H_
+#define _CGRAPHIC_H_
 #include "api.h"
 #include <iostream>
 #include <string>
