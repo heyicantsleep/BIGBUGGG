@@ -3,7 +3,7 @@
 
 #include "api.h"
 #include "canimal.h"
-#include "cgraffic.h"
+#include "cgraphic.h"
 #include "cpeople.h"
 #include "ctraffic.h"
 #include "cvehicle.h"
